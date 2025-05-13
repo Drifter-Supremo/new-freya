@@ -26,6 +26,8 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Set up basic health check endpoint
   - [x] Configure Uvicorn server
   - [x] Implement basic error handling
+  
+  > Modular refactor complete: main.py is minimal, logic split into core/ and api/routes/
 - [ ] **Set up PostgreSQL**
   - [ ] Create local development database
   - [ ] Configure connection pooling

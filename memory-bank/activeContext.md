@@ -1,5 +1,7 @@
 # Active Context: Freya Backend Rebuild
 
+> Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
+
 ## Current Work Focus
 
 - Planning and documentation for the Python + FastAPI + PostgreSQL backend rebuild.

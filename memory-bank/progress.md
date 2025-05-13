@@ -2,6 +2,7 @@
 
 ## What Works
 
+- Modular refactor complete: `app/main.py` is now minimal and only wires together routers, error handlers, and config; all logic is split into `app/core` and `app/api/routes`. Server and health endpoint work after the refactor.
 - FastAPI backend app is running locally with environment variable loading and logging configuration complete.
 - Health check endpoint (`/health`) is working and logs requests.
 - Frontend is complete and fully functional.

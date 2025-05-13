@@ -2,6 +2,7 @@
 
 ## System Architecture
 
+- Modular FastAPI structure: entrypoint (`main.py`) is minimal and only wires together routers, error handlers, and config; all configuration and error handling is in `core/`, all API endpoints are in `api/routes/`. No file should exceed 300-400 lines; everything is organized for maintainability.
 - Stateless REST API using FastAPI (Python).
 - PostgreSQL as the primary data store, replacing Firebase.
 - Three-tier memory architecture:
