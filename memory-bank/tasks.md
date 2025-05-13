@@ -22,10 +22,10 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Set up logging configuration
 - [ ] **Build basic FastAPI app**
   - [x] Create main.py entry point
-  - [ ] Configure CORS for frontend communication
-  - [ ] Set up basic health check endpoint
-  - [ ] Configure Uvicorn server
-  - [ ] Implement basic error handling
+  - [x] Configure CORS for frontend communication
+  - [x] Set up basic health check endpoint
+  - [x] Configure Uvicorn server
+  - [x] Implement basic error handling
 - [ ] **Set up PostgreSQL**
   - [ ] Create local development database
   - [ ] Configure connection pooling

@@ -22,6 +22,37 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError, HTTPException
+
+# Global error handler for HTTPException
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    logger.error(f"HTTPException: {exc.detail}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"error": exc.detail},
+    )
+
+# Global error handler for generic Exception
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled Exception: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"error": "Internal server error"},
+    )
+
+# Optional: Validation error handler for request data
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"error": "Validation error", "details": exc.errors()},
+    )
+
 # CORS middleware: allow all origins, methods, headers (for local/dev only)
 from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
@@ -32,9 +63,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Health check endpoint: used to verify the server is running
 @app.get("/health")
 def health_check():
-    """Basic health check endpoint."""
+    """
+    Health check endpoint for monitoring and testing.
+    Returns a simple status message if the server is up.
+    """
     logger.info("Health check endpoint called.")
     return {"status": "ok"}
 
