@@ -2,6 +2,8 @@
 
 ## What Works
 
+- FastAPI backend app is running locally with environment variable loading and logging configuration complete.
+- Health check endpoint (`/health`) is working and logs requests.
 - Frontend is complete and fully functional.
 - GPT-4.1 Mini fine-tuned model is ready for integration.
 - Project documentation and planning are underway.

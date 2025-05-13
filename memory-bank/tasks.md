@@ -15,13 +15,13 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Install SQLAlchemy/SQLModel and PostgreSQL driver (psycopg2)
   - [x] Add linting and formatting tools (black, isort, flake8)
 - [ ] **Configure environment variables**
-  - [ ] Create .env.example file
-  - [ ] Set up python-dotenv for environment management
-  - [ ] Configure OpenAI API key storage/retrieval
-  - [ ] Add PostgreSQL connection parameters
-  - [ ] Set up logging configuration
+  - [x] Create .env.example file
+  - [x] Set up python-dotenv for environment management
+  - [x] Configure OpenAI API key storage/retrieval
+  - [x] Add PostgreSQL connection parameters
+  - [x] Set up logging configuration
 - [ ] **Build basic FastAPI app**
-  - [ ] Create main.py entry point
+  - [x] Create main.py entry point
   - [ ] Configure CORS for frontend communication
   - [ ] Set up basic health check endpoint
   - [ ] Configure Uvicorn server
