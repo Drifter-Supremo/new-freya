@@ -4,16 +4,16 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
 
 ## Phase 1: Project Setup & Environment Configuration
 - [ ] **Create project structure**
-  - [ ] Initialize Git repository
-  - [ ] Set up folder structure (app, api, db, models, utils, etc.)
-  - [ ] Create README.md with setup instructions
-  - [ ] Create requirements.txt file
+  - [x] Initialize Git repository
+  - [x] Set up folder structure (app, api, db, models, utils, etc.)
+  - [x] Create README.md with setup instructions
+  - [x] Create requirements.txt file
 - [ ] **Set up Python environment**
-  - [ ] Install Python 3.11+ and required packages
-  - [ ] Configure virtual environment
-  - [ ] Install FastAPI and dependencies
-  - [ ] Install SQLAlchemy/SQLModel and PostgreSQL driver (psycopg2)
-  - [ ] Add linting and formatting tools (black, isort, flake8)
+  - [x] Install Python 3.11+ and required packages
+  - [x] Configure virtual environment
+  - [x] Install FastAPI and dependencies
+  - [x] Install SQLAlchemy/SQLModel and PostgreSQL driver (psycopg2)
+  - [x] Add linting and formatting tools (black, isort, flake8)
 - [ ] **Configure environment variables**
   - [ ] Create .env.example file
   - [ ] Set up python-dotenv for environment management

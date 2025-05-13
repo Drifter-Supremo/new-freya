@@ -9,9 +9,13 @@
 
 ## Development Setup
 
-- Python virtual environment for backend development
+- Backend stack: FastAPI, SQLModel, SQLAlchemy, psycopg2-binary, python-dotenv, black, isort, flake8
+- Python version: 3.12.10 (Windows)
+- Virtual environment: Working and activated
+- All dependencies installed successfully with no build errors
+- requirements.txt restored to the original stack
+- Next step: Set up environment variables using .env.example and python-dotenv
 - PostgreSQL database instance (local for dev, Railway for prod)
-- Environment variables managed via .env files
 - Alembic for database migrations
 - GitHub Actions for CI/CD pipeline
 - Node.js and pnpm for frontend (already complete)

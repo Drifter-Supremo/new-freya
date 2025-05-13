@@ -5,6 +5,10 @@
 - Frontend is complete and fully functional.
 - GPT-4.1 Mini fine-tuned model is ready for integration.
 - Project documentation and planning are underway.
+- Python 3.12 environment is set up.
+- Virtualenv is working.
+- All dependencies installed with no build errors.
+- Requirements.txt restored to the original stack.
 
 ## What's Left to Build
 
