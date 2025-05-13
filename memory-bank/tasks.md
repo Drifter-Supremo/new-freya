@@ -29,10 +29,10 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   
   > Modular refactor complete: main.py is minimal, logic split into core/ and api/routes/
 - [ ] **Set up PostgreSQL**
-  - [ ] Create local development database
-  - [ ] Configure connection pooling
-  - [ ] Set up database initialization script
-  - [ ] Implement database connection testing
+  - [x] Create local development database
+  - [x] Configure connection pooling
+  - [x] Set up database initialization script
+  - [x] Implement database connection testing
 
 ## Phase 2: Database Schema & Models
 - [ ] **Design database schema**

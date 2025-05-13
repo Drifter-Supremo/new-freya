@@ -1,5 +1,6 @@
 # Active Context: Freya Backend Rebuild
 
+> Backend setup phase complete—modular FastAPI structure, health and db-health endpoints, PostgreSQL pooling, DB initialization script, and connection testing endpoint all working. Developer experience is smooth and maintainable compared to Node.js. Ready for schema/model design phase.
 > Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
 
 ## Current Work Focus

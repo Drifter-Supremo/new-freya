@@ -24,6 +24,7 @@ from app.core.config import CORS_CONFIG, logger
 from app.core.errors import add_error_handlers
 # Import API routes
 from app.api.routes.health import router as health_router
+from app.api.routes.db_health import router as db_health_router
 
 # Create FastAPI app
 app = FastAPI()
@@ -42,6 +43,7 @@ add_error_handlers(app)
 
 # Register API routers
 app.include_router(health_router)
+app.include_router(db_health_router)
 
 # Run the app locally
 if __name__ == "__main__":
