@@ -1,0 +1,60 @@
+"use client"
+
+import { useState } from "react"
+import Visualizer from "@/components/Visualizer"
+import MessagePair from "@/components/MessagePair"
+import InvisibleInput from "@/components/InvisibleInput"
+import { useFreya } from "@/hooks/useFreya"
+
+export default function Home() {
+  const { state, statusText, sendMessage, lastUser, lastFreya } = useFreya()
+  const [messagePairs, setMessagePairs] = useState<Array<{ id: number; user: string; freya: string }>>([])
+
+  const handleSendMessage = (message: string) => {
+    // Create a new message pair with the current message
+    const newPair = {
+      id: Date.now(),
+      user: message,
+      freya: "",
+    }
+
+    // Update message pairs (keep only the latest)
+    setMessagePairs([newPair])
+
+    // Send message to Freya
+    sendMessage(message)
+  }
+
+  // Update the latest message pair when Freya responds
+  if (lastFreya && messagePairs.length > 0 && messagePairs[0].freya === "") {
+    const updatedPairs = [...messagePairs]
+    updatedPairs[0].freya = lastFreya
+    setMessagePairs(updatedPairs)
+  }
+
+  return (
+    <main className="h-screen w-full bg-gradient-to-br from-[#0A0F1F] via-[#0D1021] to-[#130726] flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative w-full h-full flex flex-col items-center">
+        {/* Visualizer - Moved higher on the screen */}
+        <div className="flex-1 flex items-center justify-center pt-12 pb-4">
+          <Visualizer state={state} />
+        </div>
+
+        {/* Status Text */}
+        <div className="text-xs tracking-[0.25em] text-accent-cy uppercase font-mono mb-4">{statusText}</div>
+
+        {/* Message Container - More space for longer messages */}
+        <div className="w-full max-w-[360px] flex-1 flex flex-col items-center justify-start overflow-hidden px-4 mb-20">
+          {messagePairs.map((pair) => (
+            <MessagePair key={pair.id} user={pair.user} freya={pair.freya} />
+          ))}
+        </div>
+
+        {/* Invisible Input - Fixed at bottom */}
+        <div className="absolute bottom-8 w-full max-w-[360px] px-4">
+          <InvisibleInput onSend={handleSendMessage} disabled={state === "replying"} />
+        </div>
+      </div>
+    </main>
+  )
+}

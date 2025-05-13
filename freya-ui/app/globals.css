@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #0a0f1f;
+  --accent-cy: #23c6ff;
+  --accent-mag: #a400ff;
+  --glass-fg: rgba(255, 255, 255, 0.12);
+}
+
+html,
+body {
+  height: 100vh;
+  overflow: hidden;
+  color: white;
+  background-color: var(--bg-deep);
+}
+
+/* Hide default input outline */
+input:focus {
+  outline: none;
+}
+
+/* Custom mask for the visualizer */
+.mask-radial {
+  mask-image: radial-gradient(circle at center, white 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, white 75%, transparent 100%);
+}
+
+/* Scanlines effect */
+.bg-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* Custom blinking cursor */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
