@@ -46,9 +46,9 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Create models for UserFact
   - [x] Create models for Topic
 - [ ] **Implement database migrations**
-  - [ ] Set up Alembic for schema migrations
-  - [ ] Create initial migration script
-  - [ ] Add versioning to database schema
+  - [x] Set up Alembic for schema migrations
+  - [x] Create initial migration script
+  - [x] Add versioning to database schema
 - [ ] **Create database access layer**
   - [ ] Implement repository pattern for data access
   - [ ] Create CRUD operations for all models

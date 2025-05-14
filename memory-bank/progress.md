@@ -28,6 +28,9 @@
     - MessageTopic (join table)
 - **Bidirectional relationships and many-to-many associations tested and working**
 - **Unit tests for each model** confirm correct schema and ORM integrity
+- **Alembic set up for migrations**
+- **Initial migration script created and applied to PostgreSQL**
+- **Schema versioning in place (alembic_version table)**
 
 ## What's Left to Build
 
