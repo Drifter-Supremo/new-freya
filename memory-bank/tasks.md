@@ -36,15 +36,15 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
 
 ## Phase 2: Database Schema & Models
 - [ ] **Design database schema**
-  - [ ] Create ERD (Entity Relationship Diagram)
-  - [ ] Define relationships between tables
-  - [ ] Optimize for query performance
+  - [x] Create ERD (Entity Relationship Diagram)
+  - [x] Define relationships between tables
+  - [x] Optimize for query performance
 - [ ] **Implement core database models**
-  - [ ] Create SQLModel/SQLAlchemy models for User
-  - [ ] Create models for Conversation
-  - [ ] Create models for Message
-  - [ ] Create models for UserFact
-  - [ ] Create models for Topic
+  - [x] Create SQLModel/SQLAlchemy models for User
+  - [x] Create models for Conversation
+  - [x] Create models for Message
+  - [x] Create models for UserFact
+  - [x] Create models for Topic
 - [ ] **Implement database migrations**
   - [ ] Set up Alembic for schema migrations
   - [ ] Create initial migration script

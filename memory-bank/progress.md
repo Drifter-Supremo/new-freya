@@ -14,22 +14,35 @@
 - All dependencies installed with no build errors.
 - Requirements.txt restored to the original stack.
 
+## Phase 2: Database Schema & Models — Complete
+
+- **ERD (Entity Relationship Diagram) created** and saved to `memory-bank/erd.md`
+- **Table relationships and constraints fully defined** in `memory-bank/relationships.md`
+- **Database query optimization strategies documented** in `memory-bank/db_optimization.md`
+- **All core models implemented and tested:**
+    - User
+    - Conversation
+    - Message
+    - UserFact
+    - Topic
+    - MessageTopic (join table)
+- **Bidirectional relationships and many-to-many associations tested and working**
+- **Unit tests for each model** confirm correct schema and ORM integrity
+
 ## What's Left to Build
 
-- Full FastAPI backend implementation.
-- PostgreSQL schema and memory architecture.
-- Memory context assembly engine.
-- API endpoints for chat, memory, and topic search.
-- Firestore to PostgreSQL migration tooling.
-- Structured logging and error handling.
-- CI/CD pipeline setup for backend.
-- Railway deployment configuration.
+- Memory context assembly engine
+- API endpoints for chat, memory, and topic search
+- Firestore to PostgreSQL migration tooling
+- Structured logging and error handling
+- CI/CD pipeline setup for backend
+- Railway deployment configuration
 
 ## Current Status
 
-- Backend rebuild is in the planning/documentation phase.
+- Backend rebuild is in the implementation phase, with database schema and models complete.
 - Node.js backend is deprecated and not in use.
 
 ## Known Issues
 
-- No critical issues at this stage; backend development pending.
+- No critical issues at this stage; backend development is on track.
