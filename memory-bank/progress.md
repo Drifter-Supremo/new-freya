@@ -13,6 +13,8 @@
 - Virtualenv is working.
 - All dependencies installed with no build errors.
 - Requirements.txt restored to the original stack.
+- [x] Implement optimized queries for memory retrieval
+  - Implemented a dedicated repository for optimized memory queries (user, topic, facts, recent messages) with SQLAlchemy, including production and test coverage.
 
 ## Phase 2: Database Schema & Models — Complete
 

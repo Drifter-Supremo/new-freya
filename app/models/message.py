@@ -9,7 +9,8 @@ class Message(Base):
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     content = Column(String, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
+    from datetime import datetime, UTC
+    timestamp = Column(DateTime, default=lambda: datetime.now(UTC), nullable=False)
 
     conversation = relationship("Conversation", back_populates="messages")
     user = relationship("User", back_populates="messages")

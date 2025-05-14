@@ -29,7 +29,7 @@
 
 ## Design Patterns
 
-- Repository pattern for database access.
+- Repository Query Pattern: Dedicated repository for efficient user/topic/fact/message retrieval using SQLAlchemy joins and eager loading. All datetime fields use timezone-aware UTC datetimes for future compatibility.
 - Service layer for business logic and memory context assembly.
 - DTOs (Data Transfer Objects) for API request/response validation.
 - Error handling middleware for consistent fallback behavior.
