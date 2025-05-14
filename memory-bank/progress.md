@@ -15,6 +15,11 @@
 - Requirements.txt restored to the original stack.
 - [x] Implement optimized queries for memory retrieval
   - Implemented a dedicated repository for optimized memory queries (user, topic, facts, recent messages) with SQLAlchemy, including production and test coverage.
+- [x] Implement and test full-text search functionality
+  - Successfully implemented PostgreSQL full-text search with tsvector/tsquery
+  - Created and tested the `search_topics_by_message_content` method in MemoryQueryRepository
+  - Fixed compatibility issues with PostgreSQL function syntax
+  - Verified relevance scoring works correctly with different search terms
 
 ## Phase 2: Database Schema & Models — Complete
 

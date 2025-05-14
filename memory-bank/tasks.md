@@ -54,11 +54,12 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Create CRUD operations for all models
   - [x] Add transaction management
   - [x] Implement optimized queries for memory retrieval
-- [ ] **Implement full-text search**
-  - [ ] Configure PostgreSQL full-text search
-  - [ ] Create search vectors for message content
-  - [ ] Implement search functionality for topic retrieval
-  - [ ] Add relevance scoring for memory queries
+- [x] **Implement full-text search**
+  - [x] Configure PostgreSQL full-text search
+  - [x] Create search vectors for message content
+  - [x] Implement search functionality for topic retrieval
+  - [x] Add relevance scoring for memory queries
+  - [x] Test full-text search functionality with real queries
 
 ## Phase 3: Memory System Implementation
 - [ ] **Implement Tier 1: User Facts**
