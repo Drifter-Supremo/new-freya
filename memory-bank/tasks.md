@@ -86,7 +86,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Added test coverage in `scripts/test_db_integration.py`
 
 > **Important Note for Testing**: All database operations must be tested against PostgreSQL (not SQLite) as the production database. PostgreSQL-specific features like full-text search (`TSVECTOR`) are used throughout the application.
-  - [ ] Implement topic-based search functionality
+  - [x] Implement topic-based search functionality
   - [ ] Create topic relevance scoring algorithm
   - [ ] Add topic memory retrieval endpoints
 - [ ] **Implement memory context builder**

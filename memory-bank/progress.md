@@ -91,7 +91,12 @@
   - Added methods for tagging messages and retrieving message topics
   - Comprehensive test coverage in `scripts/test_topic_tagging_direct.py`
   - Verified PostgreSQL compatibility in `scripts/test_db_integration.py`
-- [ ] Implement topic-based search functionality
+- [x] Implement topic-based search functionality
+  - Created `TopicSearchService` in `app/services/topic_search.py`
+  - Implemented API endpoints in `app/api/routes/topic.py`
+  - Added search, message retrieval, and user topics endpoints
+  - Created comprehensive test coverage in `tests/test_topic_search.py`
+  - Added example script in `scripts/test_topic_search.py`
 - [ ] Create topic relevance scoring algorithm
 - [ ] Add topic memory retrieval endpoints
 

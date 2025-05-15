@@ -28,8 +28,21 @@
   - Comprehensive test coverage in `scripts/test_topic_tagging_direct.py`
   - Verified PostgreSQL compatibility in `scripts/test_db_integration.py`
 
+### Topic Search Functionality
+- Implemented `TopicSearchService` in `app/services/topic_search.py`
+  - Provides methods for searching topics based on message content
+  - Retrieves messages for specific topics
+  - Gets all topics for a user
+  - Formats search results for API responses
+- Created API endpoints in `app/api/routes/topic.py`
+  - `/topics/search` - Search for topics based on a query
+  - `/topics/{topic_id}/messages` - Get messages for a specific topic
+  - `/topics/user/{user_id}` - Get all topics for a user
+- Added comprehensive test coverage in `tests/test_topic_search.py`
+- Created example script in `scripts/test_topic_search.py`
+
 ### Testing
-- Direct tests for topic extraction and tagging
+- Direct tests for topic extraction, tagging, and search
 - Integration tests with PostgreSQL database
 - Test coverage for edge cases and error conditions
 - Performance testing for database operations
