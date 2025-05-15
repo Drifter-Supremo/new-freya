@@ -40,7 +40,9 @@
 - **Repository Query Pattern**: Dedicated repository for efficient user/topic/fact/message retrieval using SQLAlchemy joins and eager loading. All datetime fields use timezone-aware UTC datetimes for future compatibility.
 - **Service Layer**: Business logic and memory context assembly are handled in dedicated service classes.
   - `TopicExtractor` service for extracting and scoring topics from messages
-  - Future services will handle topic tagging and retrieval
+  - `TopicTaggingService` for managing topic persistence and message-topic associations
+  - `OpenAIService` for handling API interactions with OpenAI
+- **Retry and Backoff Pattern**: Implemented in `OpenAIService` for handling rate limits and temporary API failures with exponential backoff.
 - **DTOs (Data Transfer Objects)**: Used for API request/response validation.
 - **Error Handling Middleware**: Provides consistent fallback behavior.
 - **Pattern Matching**:
@@ -48,6 +50,27 @@
   - Keyword-based topic extraction in `app/services/topic_extraction.py` with tests in `tests/test_topic_extraction.py`
 
 ## Component Relationships
+
+### OpenAI Integration Components
+
+#### OpenAIService
+- **Location**: `app/services/openai_service.py`
+- **Responsibility**: Handles all interactions with the OpenAI API
+- **Features**:
+  - Manages API authentication and request formatting
+  - Implements retry logic with exponential backoff
+  - Supports both streaming and non-streaming responses
+  - Provides system prompt formatting with memory context
+  - Includes specialized methods for Freya's chat completions
+
+#### OpenAI Constants
+- **Location**: `app/core/openai_constants.py`
+- **Responsibility**: Centralizes OpenAI configuration values
+- **Features**:
+  - Default model specification (fine-tuned GPT-4.1 mini)
+  - Temperature and token settings
+  - Retry configuration
+  - Freya's system prompt
 
 ### Topic Memory Components
 

@@ -8,6 +8,41 @@
 - Ready to begin database access layer (repository pattern, CRUD, etc).
 > Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
 
+## OpenAI Integration (Phase 4)
+
+### OpenAI Service Wrapper
+- Implemented `OpenAIService` class in `app/services/openai_service.py`
+  - Comprehensive API client with authentication and request handling
+  - Robust retry logic with exponential backoff for rate limits and API errors
+  - Support for both streaming and non-streaming responses
+  - Memory context injection into system prompts
+  - Freya-specific chat completion methods
+  - Efficient content extraction from API responses
+  - Extensive error handling and logging
+- Created `openai_constants.py` in `app/core/` with all OpenAI configuration
+  - Default model: Freya's fine-tuned GPT-4.1 mini (ft:gpt-4.1-mini-2025-04-14:gorlea-industries:freya:BULkCmxj)
+  - Default temperature: 1.0
+  - Maximum tokens: 800
+  - API settings for retries, backoff, and timeouts
+  - Freya's complete system prompt
+- Added comprehensive test coverage in `tests/test_openai_service.py`
+  - Tests for service initialization
+  - Tests for chat completion functionality
+  - Tests for retry behavior
+  - Tests for memory context integration
+  - Tests for conversation history handling
+  - Tests for response content extraction
+- Created example script in `examples/simple_openai_demo.py`
+  - Demonstrates basic API usage
+  - Shows memory context integration
+  - Includes debugging information for API responses
+- Added documentation in `docs/openai_service.md`
+  - Detailed explanation of service features
+  - Usage examples for different scenarios
+  - Configuration options
+  - Error handling strategies
+- Updated `requirements.txt` with OpenAI package (v1.17.0+)
+
 ## Tier 3: Topic Memory Implementation
 
 ### Topic Extraction
@@ -99,47 +134,25 @@
 - Added comprehensive test coverage in `tests/test_topic_memory_service.py`
 - Created example script in `scripts/test_topic_memory.py` for demonstration
 
-### Testing
-- Direct tests for topic extraction, tagging, and search
-- Integration tests with PostgreSQL database
-- Test coverage for edge cases and error conditions
-- Performance testing for database operations
-
 ## Current Work Focus
 
-- Planning and documentation for the Python + FastAPI + PostgreSQL backend rebuild.
-- Defining system architecture and Optimized memory retrieval queries: Implemented and tested (production-ready).strategies.
-- Preparing for Firestore data migration.
+- Implementing Phase 4: OpenAI Integration & API Endpoints
+- OpenAI service wrapper completed and tested with Freya's fine-tuned model
+- Planning for chat completion endpoint and system prompt handling
+- Integrating memory context with OpenAI chat completions
 - Python version: 3.12.10 (Windows)
 - Virtual environment: Created and activated successfully
-- Dependencies installed: FastAPI, SQLModel, SQLAlchemy, psycopg2-binary, python-dotenv, black, isort, flake8
-- requirements.txt restored to original stack, all packages installed without build errors
-- Project is ready for environment variable configuration (.env.example and python-dotenv)
+- Dependencies installed: FastAPI, SQLModel, SQLAlchemy, psycopg2-binary, python-dotenv, OpenAI, black, isort, flake8
+- requirements.txt updated with OpenAI package dependency
+- Project is configured with environment variables (.env file contains OPENAI_API_KEY and POSTGRES_URL)
 
-## Recent Changes
-
-- Project brief and product context documentation established.
-- Ported regex patterns from legacy code to `utils/fact_patterns.py` (Tier 1 User Facts)
-- Node.js backend deprecated; frontend is complete and stable.
-
-- Regex patterns for user fact extraction have been ported to `utils/fact_patterns.py` and validated with comprehensive test coverage in `tests/test_fact_patterns.py`
-- User fact storage logic implemented and tested (facts extracted from messages are persisted to DB; duplicate handling verified)
-- Relevance scoring for fact retrieval implemented and tested (via `MemoryQueryRepository.get_facts_with_relevance`)
-- Memory context assembly service created for integrating relevant facts into chat context (`memory_context_service.py`)
-- Conversation history service implemented with methods for retrieving conversation history and context management
-- API endpoints created for retrieving conversation history, recent messages, and conversation context
-- Memory context service updated to use conversation history service for improved context assembly
-- Comprehensive test coverage added for conversation history service and API endpoints
-- Topic extraction service implemented for Tier 3 memory with 100% test coverage
-- Topic extraction supports 15+ categories with keyword-based matching
-- Example implementation demonstrates topic extraction from sample messages
 ## Next Steps
 
-1. Document system architecture and design patterns.
-2. Specify technology stack and development setup.
-3. Draft initial FastAPI backend structure.
-4. Plan and document Firestore → PostgreSQL migration process.
-5. Set up Railway deployment configuration.
+1. Create the chat completion endpoint
+2. Implement system prompt handling
+3. Add conversation management endpoints
+4. Implement frontend integration with the browser event system
+5. Complete data migration from Firestore to PostgreSQL
 
 ## Active Decisions and Considerations
 
@@ -147,3 +160,6 @@
 - Ensure compatibility with existing frontend event system.
 - Use SQLModel or SQLAlchemy for ORM layer.
 - Maintain clear, up-to-date documentation throughout development.
+- Implement API endpoints first for conversation management, then for chat completions
+- Build browser event emitter to maintain compatibility with existing frontend
+

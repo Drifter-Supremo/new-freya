@@ -51,8 +51,15 @@
 - **Web Framework**: FastAPI
 - **Database**: SQLAlchemy, SQLModel, psycopg2-binary, asyncpg
 - **Development**: black, isort, flake8, pytest
-- **AI**: OpenAI Python SDK
+- **AI**: OpenAI Python SDK (v1.17.0+)
 - **Utilities**: python-dotenv, pydantic, python-multipart
+
+### OpenAI Integration
+- **Core**: OpenAI Python SDK for API communication
+- **Model**: Fine-tuned GPT-4.1 Mini (ft:gpt-4.1-mini-2025-04-14:gorlea-industries:freya:BULkCmxj)
+- **Features**: Retry logic, memory context injection, streaming support
+- **Error Handling**: Exponential backoff for rate limits and API errors
+- **Structure**: Service-oriented design with dependency injection
 
 ### Topic Extraction
 - **Core**: Built-in Python re module for regex
