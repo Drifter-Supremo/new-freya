@@ -80,7 +80,12 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Implemented `TopicExtractor` class in `app/services/topic_extraction.py`
     - Added comprehensive test coverage in `tests/test_topic_extraction.py`
     - Created example usage in `examples/topic_extraction_demo.py`
-  - [ ] Create topic tagging service
+  - [x] Create topic tagging service
+    - Implemented `TopicTaggingService` in `app/services/topic_tagging.py`
+    - Verified PostgreSQL compatibility with integration tests
+    - Added test coverage in `scripts/test_db_integration.py`
+
+> **Important Note for Testing**: All database operations must be tested against PostgreSQL (not SQLite) as the production database. PostgreSQL-specific features like full-text search (`TSVECTOR`) are used throughout the application.
   - [ ] Implement topic-based search functionality
   - [ ] Create topic relevance scoring algorithm
   - [ ] Add topic memory retrieval endpoints

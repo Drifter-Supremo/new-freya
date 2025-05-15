@@ -1,5 +1,7 @@
 # Progress: Freya Backend Rebuild
 
+> **Important Testing Note**: All database operations must be tested against PostgreSQL (not SQLite) as the production database. PostgreSQL-specific features like full-text search (`TSVECTOR`) are used throughout the application.
+
 ## What Works
 
 - **Backend setup phase complete:** Modular FastAPI structure, health and db-health endpoints, PostgreSQL connection pooling, database initialization script, and connection testing endpoint are all working. Developer experience has been smooth and maintainable compared to Node.js.
@@ -37,18 +39,22 @@
 ## Phase 3: Memory System Implementation - In Progress
 
 ### Tier 3: Topic Memory
-- [x] Ported topic extraction logic from legacy JavaScript to Python
+- [x] Ported and enhanced topic extraction logic
   - Implemented `TopicExtractor` service in `app/services/topic_extraction.py`
   - Added support for 15+ topic categories with keyword-based matching
   - Implemented case-insensitive whole-word matching with word boundaries
   - Added scoring system to rank topics by relevance
-- [x] Added comprehensive test coverage
-  - Unit tests for topic extraction functionality
-  - Test cases for edge cases and various message types
-  - 100% test coverage achieved
-- [x] Created example implementation
-  - Added `examples/topic_extraction_demo.py` demonstrating usage
-  - Included sample messages showing topic extraction in action
+  - 100% test coverage with `tests/test_topic_extraction.py`
+  - Example implementation in `examples/topic_extraction_demo.py`
+
+- [x] Implemented Topic Tagging Service
+  - Created `TopicTaggingService` in `app/services/topic_tagging.py`
+  - Handles database operations for topics and message-topic associations
+  - Methods for tagging messages and retrieving message topics
+  - Comprehensive test coverage in `scripts/test_topic_tagging_direct.py`
+  - Verified PostgreSQL compatibility in `scripts/test_db_integration.py`
+  - Handles duplicate topic prevention and case-insensitive topic matching
+  - Efficiently manages database transactions for topic operations
 
 ## Phase 2: Database Schema & Models — Complete
 
@@ -70,9 +76,21 @@
 
 ## What's Left to Build
 
-### Tier 3: Topic Memory (In Progress)
+### Tier 3: Topic Memory (Partially Complete)
 - [x] Port topic extraction logic from legacy code
-- [ ] Create topic tagging service
+  - Implemented `TopicExtractor` service in `app/services/topic_extraction.py`
+  - Added support for 15+ topic categories with keyword-based matching
+  - Implemented case-insensitive whole-word matching with word boundaries
+  - Added scoring system to rank topics by relevance
+  - 100% test coverage with `tests/test_topic_extraction.py`
+  - Example usage in `examples/topic_extraction_demo.py`
+- [x] Create topic tagging service
+  - Implemented `TopicTaggingService` in `app/services/topic_tagging.py`
+  - Integrated with PostgreSQL database for topic persistence
+  - Handles message-topic associations in `message_topics` table
+  - Added methods for tagging messages and retrieving message topics
+  - Comprehensive test coverage in `scripts/test_topic_tagging_direct.py`
+  - Verified PostgreSQL compatibility in `scripts/test_db_integration.py`
 - [ ] Implement topic-based search functionality
 - [ ] Create topic relevance scoring algorithm
 - [ ] Add topic memory retrieval endpoints

@@ -1,5 +1,7 @@
 # Active Context: Freya Backend Rebuild
 
+> **Testing Requirements**: All database tests must be run against PostgreSQL (not SQLite). The application uses PostgreSQL-specific features including full-text search (`TSVECTOR`), JSONB fields, and other PostgreSQL-specific optimizations. Test configurations should connect to a PostgreSQL database with the same version as production.
+
 > Backend setup phase complete—modular FastAPI structure, health and db-health endpoints, PostgreSQL pooling, DB initialization script, and connection testing endpoint all working. Developer experience is smooth and maintainable compared to Node.js.
 - Database schema and all core models fully implemented and tested.
 - Alembic set up for migrations, initial migration script created and applied to PostgreSQL, schema versioning in place.
@@ -7,10 +9,30 @@
 > Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
 
 ## Tier 3: Topic Memory Implementation
-- Topic extraction logic ported from legacy JavaScript to Python
-- `TopicExtractor` service implemented in `app/services/topic_extraction.py`
-- Comprehensive test coverage with `tests/test_topic_extraction.py`
-- Example usage provided in `examples/topic_extraction_demo.py`
+
+### Topic Extraction
+- Implemented `TopicExtractor` service in `app/services/topic_extraction.py`
+  - Ported from legacy JavaScript with significant enhancements
+  - Supports 15+ topic categories with keyword-based matching
+  - Case-insensitive whole-word matching with word boundaries
+  - Scoring system to rank topics by relevance
+  - 100% test coverage in `tests/test_topic_extraction.py`
+  - Example usage in `examples/topic_extraction_demo.py`
+
+### Topic Tagging Service
+- Implemented `TopicTaggingService` in `app/services/topic_tagging.py`
+  - Handles all database operations for topics and message-topic associations
+  - Methods for tagging messages and retrieving message topics
+  - Prevents duplicate topics with case-insensitive matching
+  - Efficient transaction management for database operations
+  - Comprehensive test coverage in `scripts/test_topic_tagging_direct.py`
+  - Verified PostgreSQL compatibility in `scripts/test_db_integration.py`
+
+### Testing
+- Direct tests for topic extraction and tagging
+- Integration tests with PostgreSQL database
+- Test coverage for edge cases and error conditions
+- Performance testing for database operations
 
 ## Current Work Focus
 

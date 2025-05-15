@@ -1,5 +1,13 @@
 # System Patterns: Freya Backend
 
+> **Database Testing Policy**: All database operations and tests must be run against a PostgreSQL database. SQLite is not supported due to the use of PostgreSQL-specific features such as:
+> - Full-text search (`TSVECTOR/TSQUERY`)
+> - JSONB data type and operations
+> - Advanced indexing features
+> - Specific SQL functions and syntax
+>
+> Test configurations must connect to a PostgreSQL database instance that matches the production database version.
+
 ## System Architecture
 
 - Modular FastAPI structure: entrypoint (`main.py`) is minimal and only wires together routers, error handlers, and config; all configuration and error handling is in `core/`, all API endpoints are in `api/routes/`. No file should exceed 300-400 lines; everything is organized for maintainability.
@@ -41,13 +49,37 @@
 
 ## Component Relationships
 
+### Topic Memory Components
+
+#### TopicExtractor Service
+- **Location**: `app/services/topic_extraction.py`
+- **Responsibility**: Analyzes message content to identify relevant topics
+- **Features**:
+  - Keyword-based topic matching across 15+ categories
+  - Case-insensitive whole-word matching with word boundaries
+  - Relevance scoring for matched topics
+  - Configurable topic categories and keywords
+
+#### TopicTaggingService
+- **Location**: `app/services/topic_tagging.py`
+- **Responsibility**: Manages topic persistence and message-topic associations
+- **Features**:
+  - Creates and retrieves topics from the database
+  - Associates messages with topics in a many-to-many relationship
+  - Prevents duplicate topics with case-insensitive matching
+  - Efficient transaction management for database operations
+
+### System Integration
+
 - **API Layer**: Endpoints in `api/routes/` handle HTTP requests and responses
-- **Service Layer**: Contains business logic and coordinates between different components
-  - `TopicExtractor` processes messages to identify relevant topics
+- **Service Layer**:
+  - `TopicExtractor` identifies potential topics from message content
+  - `TopicTaggingService` persists topics and their relationships
   - Other services handle different aspects of the memory system
 - **Data Access Layer**:
   - Repository pattern for database operations
   - SQLAlchemy ORM for database interactions
+  - PostgreSQL-specific features (TSVECTOR, JSONB) for optimized queries
 - **Memory System**:
   - Three-tier architecture (User Facts, Recent History, Topic Memory)
   - Memory context engine aggregates data from all tiers
