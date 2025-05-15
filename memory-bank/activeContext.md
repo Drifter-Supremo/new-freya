@@ -1,8 +1,8 @@
 # Active Context: Freya Backend Rebuild
 
-> Backend setup phase complete—modular FastAPI structure, health and db-health endpoints, PostgreSQL pooling, DB initialization script, and connection testing endpoint all working. Developer experience is smooth and maintainable compared to Node.js. 
-- Database schema and all core models fully implemented and tested. 
-- Alembic set up for migrations, initial migration script created and applied to PostgreSQL, schema versioning in place. 
+> Backend setup phase complete—modular FastAPI structure, health and db-health endpoints, PostgreSQL pooling, DB initialization script, and connection testing endpoint all working. Developer experience is smooth and maintainable compared to Node.js.
+- Database schema and all core models fully implemented and tested.
+- Alembic set up for migrations, initial migration script created and applied to PostgreSQL, schema versioning in place.
 - Ready to begin database access layer (repository pattern, CRUD, etc).
 > Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
 
@@ -27,6 +27,10 @@
 - User fact storage logic implemented and tested (facts extracted from messages are persisted to DB; duplicate handling verified)
 - Relevance scoring for fact retrieval implemented and tested (via `MemoryQueryRepository.get_facts_with_relevance`)
 - Memory context assembly service created for integrating relevant facts into chat context (`memory_context_service.py`)
+- Conversation history service implemented with methods for retrieving conversation history and context management
+- API endpoints created for retrieving conversation history, recent messages, and conversation context
+- Memory context service updated to use conversation history service for improved context assembly
+- Comprehensive test coverage added for conversation history service and API endpoints
 ## Next Steps
 
 1. Document system architecture and design patterns.

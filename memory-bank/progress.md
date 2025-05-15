@@ -26,6 +26,13 @@
   - Created a new endpoint `/user-facts/{user_id}/relevant` for accessing facts with relevance scores
   - Added memory context assembly service for integrating relevant facts into chat context
   - Comprehensive test coverage in `tests/test_fact_relevance.py` and `tests/test_memory_context.py`
+- [x] Implement conversation history service (Tier 2: Recent History)
+  - Created `ConversationHistoryService` for managing conversation history and context
+  - Implemented methods for retrieving recent conversations, conversation history, and messages across conversations
+  - Added conversation context management functionality
+  - Created API endpoints for retrieving conversation history and context
+  - Added comprehensive test coverage in `tests/test_conversation_service_basic.py` and `tests/test_conversation_api_basic.py`
+  - Integrated with memory context service for improved context assembly
 
 ## Phase 2: Database Schema & Models — Complete
 
@@ -47,10 +54,11 @@
 
 ## What's Left to Build
 
-- Memory context assembly engine
+- [x] Memory context assembly engine (implemented in `memory_context_service.py`)
 - [x] Port regex patterns from legacy code (patterns ported and tested via `utils/fact_patterns.py` and `tests/test_fact_patterns.py`)
 - [x] Implement and test user fact storage logic (facts extracted from messages and persisted to DB; duplicate handling verified)
-- API endpoints for chat, memory, and topic search
+- [x] Implement conversation history service (created in `conversation_history_service.py` with API endpoints)
+- API endpoints for chat and topic search
 - Firestore to PostgreSQL migration tooling
 - Structured logging and error handling
 - CI/CD pipeline setup for backend
@@ -58,7 +66,9 @@
 
 ## Current Status
 
-- Backend rebuild is in the implementation phase, with database schema and models complete.
+- Backend rebuild is in the implementation phase, with database schema, models, and memory system (Tier 1 and Tier 2) complete.
+- User Facts (Tier 1) and Recent History (Tier 2) memory systems are fully implemented and tested.
+- Memory context assembly service is working and integrated with conversation history.
 - Node.js backend is deprecated and not in use.
 
 ## Security Improvements

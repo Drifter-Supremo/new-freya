@@ -17,6 +17,7 @@ from app.models.userfact import UserFact
 from app.models.message import Message
 from app.models.topic import Topic
 from app.repository.memory import MemoryQueryRepository
+from app.core.conversation_history_service import ConversationHistoryService
 
 # Sample test data
 TEST_USER = {"id": 1, "name": "Test User"}
@@ -54,11 +55,11 @@ class TestMemoryContext:
     def mock_db_session(self, mocker):
         """Create a mock DB session with pre-loaded test data."""
         mock_session = mocker.MagicMock(spec=Session)
-        
+
         # Mock app.repository.memory
         # Create an instance with the real get_facts_with_relevance method
         mock_memory_repo = mocker.MagicMock()
-        
+
         # Define custom implementation for get_facts_with_relevance
         def mock_get_facts_with_relevance(user_id, query, limit=10):
             # Create UserFact objects from test data
@@ -68,13 +69,13 @@ class TestMemoryContext:
                 for k, v in fact_data.items():
                     setattr(fact, k, v)
                 facts.append(fact)
-            
+
             # Simple scoring logic
             scored_facts = []
             for fact in facts:
                 score = 0.0
                 query_terms = query.lower().split()
-                
+
                 # Special keywords boost
                 if ('job' in query_terms or 'work' in query_terms) and fact.fact_type == 'job':
                     score += 2.0
@@ -84,12 +85,12 @@ class TestMemoryContext:
                     score += 2.0
                 if ('food' in query_terms or 'like' in query_terms) and fact.fact_type == 'preferences':
                     score += 1.5
-                
+
                 # Simple term matching
                 for term in query_terms:
                     if term.lower() in fact.value.lower():
                         score += 1.0
-                
+
                 # Apply type weights
                 type_weights = {
                     'job': 1.5,
@@ -99,41 +100,41 @@ class TestMemoryContext:
                     'preferences': 1.1,
                     'pets': 1.0
                 }
-                
+
                 if score > 0:
                     type_weight = type_weights.get(fact.fact_type, 1.0)
                     final_score = score * type_weight
                     scored_facts.append((fact, final_score))
-            
+
             # Sort by score
             scored_facts.sort(key=lambda x: x[1], reverse=True)
             return scored_facts[:limit]
-        
+
         # Mock get_recent_memories_for_user
         def mock_get_recent_memories(user_id, limit=20):
             recent_messages = []
-            
+
             # Create Message objects
             for msg_data in TEST_MESSAGES:
                 msg = mocker.MagicMock(spec=Message)
                 for k, v in msg_data.items():
                     setattr(msg, k, v)
                 recent_messages.append(msg)
-            
+
             # Sort by timestamp (newest first)
             recent_messages.sort(key=lambda x: x.timestamp, reverse=True)
             return recent_messages[:limit]
-        
+
         # Mock search_topics_by_message_content
         def mock_search_topics(user_id, query, limit=10):
             # Simple topic matching based on query terms
             matched_topics = []
-            
+
             for topic_data in TEST_TOPICS:
                 topic = mocker.MagicMock(spec=Topic)
                 for k, v in topic_data.items():
                     setattr(topic, k, v)
-                
+
                 # Calculate score based on if topic name is in query
                 score = 0.0
                 if topic.name in query.lower():
@@ -142,17 +143,17 @@ class TestMemoryContext:
                     score = 0.8
                 elif topic.name == 'family' and ('kids' in query.lower() or 'children' in query.lower()):
                     score = 0.8
-                
+
                 if score > 0:
                     matched_topics.append((topic, score))
-            
+
             return matched_topics[:limit]
-        
+
         # Mock get_messages_for_user_topic
         def mock_get_topic_messages(user_id, topic_id, limit=50):
             # Return messages associated with the topic
             topic_messages = []
-            
+
             for assoc in MESSAGE_TOPICS:
                 if assoc["topic_id"] == topic_id:
                     # Find the corresponding message
@@ -162,58 +163,97 @@ class TestMemoryContext:
                             for k, v in msg_data.items():
                                 setattr(msg, k, v)
                             topic_messages.append(msg)
-            
+
             return topic_messages[:limit]
-        
+
         # Assign the mock methods
         mock_memory_repo.get_facts_with_relevance.side_effect = mock_get_facts_with_relevance
         mock_memory_repo.get_recent_memories_for_user.side_effect = mock_get_recent_memories
         mock_memory_repo.search_topics_by_message_content.side_effect = mock_search_topics
         mock_memory_repo.get_messages_for_user_topic.side_effect = mock_get_topic_messages
-        
+
         # Mock the repository creation
         mocker.patch("app.repository.memory.MemoryQueryRepository", return_value=mock_memory_repo)
-        
+
+        # Mock the conversation history service
+        mock_conversation_service = mocker.MagicMock()
+
+        # Mock get_recent_messages_across_conversations
+        def mock_get_recent_messages_across_conversations(user_id, limit=10, max_age_days=None):
+            # Reuse the same logic as mock_get_recent_memories
+            recent_messages = []
+
+            # Create Message objects
+            for msg_data in TEST_MESSAGES:
+                msg = mocker.MagicMock(spec=Message)
+                for k, v in msg_data.items():
+                    setattr(msg, k, v)
+                recent_messages.append(msg)
+
+            # Sort by timestamp (newest first)
+            recent_messages.sort(key=lambda x: x.timestamp, reverse=True)
+            return recent_messages[:limit]
+
+        # Mock format_messages_for_context
+        def mock_format_messages_for_context(messages, include_timestamps=True):
+            formatted_messages = []
+            for msg in messages:
+                message_dict = {
+                    "content": msg.content,
+                    "user_id": msg.user_id
+                }
+                if include_timestamps and hasattr(msg, "timestamp"):
+                    message_dict["timestamp"] = msg.timestamp.isoformat()
+                formatted_messages.append(message_dict)
+            return formatted_messages
+
+        # Assign the mock methods
+        mock_conversation_service.get_recent_messages_across_conversations.side_effect = mock_get_recent_messages_across_conversations
+        mock_conversation_service.format_messages_for_context.side_effect = mock_format_messages_for_context
+
+        # Mock the service creation
+        mocker.patch("app.core.conversation_history_service.ConversationHistoryService", return_value=mock_conversation_service)
+
         return mock_session
-    
+
     def test_assemble_memory_context_job_query(self, mock_db_session):
         """Test memory context assembly for a job-related query."""
         # Call the service
         memory_context = assemble_memory_context(mock_db_session, 1, "Tell me about your job at Google")
-        
+
         # Assertions
         assert "user_facts" in memory_context
         assert "recent_memories" in memory_context
         assert "topic_memories" in memory_context
-        
+
         # Check that job fact is included and has high confidence
         job_facts = [f for f in memory_context["user_facts"] if f["type"] == "job"]
         assert len(job_facts) > 0
         assert "Google" in job_facts[0]["value"]
         assert job_facts[0]["confidence"] >= 90  # Should have high confidence
-        
+
         # Print the memory context for debugging
         print("\nMemory Context for job query:")
         print(f"User Facts: {memory_context['user_facts']}")
         print(f"Recent Memories: {len(memory_context['recent_memories'])}")
         print(f"Topic Memories: {memory_context['topic_memories']}")
-    
+
     def test_assemble_memory_context_combined_query(self, mock_db_session):
         """Test memory context assembly for a query with multiple topics."""
         # Call the service
         memory_context = assemble_memory_context(
-            mock_db_session, 1, 
+            mock_db_session, 1,
             "Do you have kids and where do you live?"
         )
-        
+
         # Assertions
         assert "user_facts" in memory_context
-        
+
         # Should include both family and location facts
         fact_types = [f["type"] for f in memory_context["user_facts"]]
         assert "family" in fact_types
         assert "location" in fact_types
-        
+
         # Print the memory context for debugging
         print("\nMemory Context for combined query:")
         print(f"User Facts: {memory_context['user_facts']}")

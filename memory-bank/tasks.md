@@ -26,7 +26,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Set up basic health check endpoint
   - [x] Configure Uvicorn server
   - [x] Implement basic error handling
-  
+
   > Modular refactor complete: main.py is minimal, logic split into core/ and api/routes/
 - [x] **Set up PostgreSQL**
   - [x] Create local development database
@@ -70,11 +70,11 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Implement user fact storage logic
   - [x] Create user fact retrieval endpoints
   - [x] Add relevance scoring for fact retrieval
-- [ ] **Implement Tier 2: Recent History**
-  - [ ] Create conversation history service
-  - [ ] Implement recent message retrieval logic
-  - [ ] Add conversation context management
-  - [ ] Optimize query performance for history retrieval
+- [x] **Implement Tier 2: Recent History**
+  - [x] Create conversation history service
+  - [x] Implement recent message retrieval logic
+  - [x] Add conversation context management
+  - [x] Optimize query performance for history retrieval
 - [ ] **Implement Tier 3: Topic Memory**
   - [ ] Port topic extraction logic from legacy code
   - [ ] Create topic tagging service
@@ -290,30 +290,30 @@ users
   id: UUID (PK)
   name: VARCHAR
   created_at: TIMESTAMP
-  
+
 conversations
   id: UUID (PK)
   user_id: UUID (FK -> users.id)
   created_at: TIMESTAMP
-  
+
 messages
   id: UUID (PK)
   conversation_id: UUID (FK -> conversations.id)
   role: VARCHAR (user/assistant)
   content: TEXT
   timestamp: TIMESTAMP
-  
+
 user_facts
   id: UUID (PK)
   user_id: UUID (FK -> users.id)
   type: VARCHAR (job, location, interests, etc.)
   value: TEXT
   timestamp: TIMESTAMP
-  
+
 topics
   id: UUID (PK)
   name: VARCHAR
-  
+
 message_topics
   id: UUID (PK)
   message_id: UUID (FK -> messages.id)
