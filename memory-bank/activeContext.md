@@ -53,6 +53,21 @@
 - Added comprehensive test coverage in `tests/test_topic_relevance.py`
 - Created example script in `scripts/test_topic_relevance.py` for demonstration
 
+### Topic Memory Retrieval
+- Implemented `TopicMemoryService` in `app/services/topic_memory_service.py`
+  - Provides methods for retrieving memory context based on topics
+  - Retrieves memory context based on queries
+  - Formats topic-based memory for chat completions
+  - Supports comprehensive memory context retrieval
+- Created API endpoints in `app/api/routes/memory.py`
+  - `/memory/context` - Retrieve complete memory context for a chat completion
+  - `/memory/topics` - Retrieve topic-based memory context
+  - `/memory/topics/{topic_id}` - Retrieve memory context for a specific topic
+  - `/memory/comprehensive` - Retrieve comprehensive memory context
+- Updated `memory_context_service.py` to use advanced topic relevance scoring
+- Added comprehensive test coverage in `tests/test_topic_memory_service.py`
+- Created example script in `scripts/test_topic_memory.py` for demonstration
+
 ### Testing
 - Direct tests for topic extraction, tagging, and search
 - Integration tests with PostgreSQL database

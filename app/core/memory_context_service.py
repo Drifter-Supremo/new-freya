@@ -7,21 +7,23 @@ from sqlalchemy.orm import Session
 from app.core.user_fact_service import get_relevant_facts_for_context, format_facts_for_context
 from app.core.conversation_history_service import ConversationHistoryService
 from app.repository.memory import MemoryQueryRepository
+from app.services.topic_memory_service import TopicMemoryService
 
 
-def assemble_memory_context(db: Session, user_id: int, query: str) -> Dict[str, Any]:
+def assemble_memory_context(db: Session, user_id: int, query: str, use_advanced_scoring: bool = True) -> Dict[str, Any]:
     """
     Assemble a complete memory context for a chat completion request.
 
     This includes:
     - Relevant user facts with confidence scores
     - Recent conversation history
-    - Topic-related memories (if applicable)
+    - Topic-related memories with advanced relevance scoring
 
     Args:
         db: Database session
         user_id: User ID to retrieve memory for
         query: The current user query
+        use_advanced_scoring: Whether to use advanced topic relevance scoring (default: True)
 
     Returns:
         Dict containing structured memory context
@@ -32,11 +34,9 @@ def assemble_memory_context(db: Session, user_id: int, query: str) -> Dict[str, 
         "topic_memories": []
     }
 
-    # Get repository for memory queries
-    memory_repo = MemoryQueryRepository(db)
-
-    # Create conversation history service
+    # Create services
     conversation_history_service = ConversationHistoryService(db)
+    topic_memory_service = TopicMemoryService(db)
 
     # 1. Get and format relevant user facts
     relevant_facts = get_relevant_facts_for_context(db, user_id, query, limit=5)
@@ -53,19 +53,15 @@ def assemble_memory_context(db: Session, user_id: int, query: str) -> Dict[str, 
         include_timestamps=True
     )
 
-    # 3. Search for topic-related memories (will be expanded in future tasks)
-    topic_results = memory_repo.search_topics_by_message_content(user_id, query, limit=2)
-    if topic_results:
-        # We found some topics - get related messages
-        for topic, score in topic_results:
-            topic_messages = memory_repo.get_messages_for_user_topic(user_id, topic.id, limit=3)
-            memory_context["topic_memories"].append({
-                "topic": topic.name,
-                "relevance": min(100, int(score * 100)),
-                "messages": conversation_history_service.format_messages_for_context(
-                    messages=topic_messages,
-                    include_timestamps=True
-                )
-            })
+    # 3. Get topic-related memories using the topic memory service
+    topic_context = topic_memory_service.get_memory_context_by_query(
+        user_id=user_id,
+        query=query,
+        topic_limit=3,
+        message_limit=3,
+        use_advanced_scoring=use_advanced_scoring
+    )
+
+    memory_context["topic_memories"] = topic_context["topic_memories"]
 
     return memory_context

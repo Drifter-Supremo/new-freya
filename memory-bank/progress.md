@@ -104,7 +104,13 @@
   - Algorithm considers full-text search, topic frequency, recency, and direct keyword matches
   - Added comprehensive test coverage in `tests/test_topic_relevance.py`
   - Created example script in `scripts/test_topic_relevance.py`
-- [ ] Add topic memory retrieval endpoints
+- [x] Add topic memory retrieval endpoints
+  - Created `TopicMemoryService` in `app/services/topic_memory_service.py`
+  - Implemented API endpoints in `app/api/routes/memory.py`
+  - Added endpoints for retrieving memory context based on topics and queries
+  - Updated `memory_context_service.py` to use advanced topic relevance scoring
+  - Added comprehensive test coverage in `tests/test_topic_memory_service.py`
+  - Created example script in `scripts/test_topic_memory.py`
 
 ### Other Components
 - [x] Memory context assembly engine (implemented in `memory_context_service.py`)
