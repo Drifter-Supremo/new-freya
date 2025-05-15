@@ -97,7 +97,13 @@
   - Added search, message retrieval, and user topics endpoints
   - Created comprehensive test coverage in `tests/test_topic_search.py`
   - Added example script in `scripts/test_topic_search.py`
-- [ ] Create topic relevance scoring algorithm
+- [x] Create topic relevance scoring algorithm
+  - Implemented advanced relevance scoring in `MemoryQueryRepository.get_topics_with_advanced_relevance`
+  - Added method to `TopicSearchService` for advanced topic search
+  - Created new API endpoint at `/topics/search/advanced`
+  - Algorithm considers full-text search, topic frequency, recency, and direct keyword matches
+  - Added comprehensive test coverage in `tests/test_topic_relevance.py`
+  - Created example script in `scripts/test_topic_relevance.py`
 - [ ] Add topic memory retrieval endpoints
 
 ### Other Components

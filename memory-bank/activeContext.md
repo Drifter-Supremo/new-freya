@@ -41,6 +41,18 @@
 - Added comprehensive test coverage in `tests/test_topic_search.py`
 - Created example script in `scripts/test_topic_search.py`
 
+### Topic Relevance Scoring
+- Implemented advanced relevance scoring algorithm in `MemoryQueryRepository.get_topics_with_advanced_relevance`
+  - Considers multiple factors for more accurate topic relevance:
+    - Full-text search relevance (PostgreSQL ts_rank)
+    - Topic frequency (how often the topic appears in user messages)
+    - Recency (more recent topics get higher scores)
+    - Direct keyword matches between query and topic name
+- Added `search_topics_advanced` method to `TopicSearchService`
+- Created new API endpoint at `/topics/search/advanced`
+- Added comprehensive test coverage in `tests/test_topic_relevance.py`
+- Created example script in `scripts/test_topic_relevance.py` for demonstration
+
 ### Testing
 - Direct tests for topic extraction, tagging, and search
 - Integration tests with PostgreSQL database

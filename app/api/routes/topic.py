@@ -20,16 +20,42 @@ def search_topics(
 ):
     """
     Search for topics relevant to a query for a specific user.
-    
+
     Topics are ranked by relevance to the search query using PostgreSQL full-text search.
     Returns a list of topics with relevance scores.
     """
     service = TopicSearchService(db)
     results = service.search_topics(user_id, query, limit)
-    
+
     if not results:
         return []
-    
+
+    return service.format_topic_search_results(results)
+
+@router.get("/search/advanced", response_model=List[Dict[str, Any]])
+def search_topics_advanced(
+    user_id: int = Query(..., description="User ID to search topics for"),
+    query: str = Query(..., description="Search query string"),
+    limit: int = Query(10, description="Maximum number of topics to return"),
+    db: Session = Depends(get_db)
+):
+    """
+    Search for topics with advanced relevance scoring.
+
+    Topics are ranked using a sophisticated algorithm that considers:
+    - Full-text search relevance
+    - Topic frequency (how often the topic appears in user messages)
+    - Recency (more recent topics get higher scores)
+    - Direct keyword matches between query and topic name
+
+    Returns a list of topics with relevance scores.
+    """
+    service = TopicSearchService(db)
+    results = service.search_topics_advanced(user_id, query, limit)
+
+    if not results:
+        return []
+
     return service.format_topic_search_results(results)
 
 @router.get("/{topic_id}/messages", response_model=List[Dict[str, Any]])
@@ -41,7 +67,7 @@ def get_topic_messages(
 ):
     """
     Get messages for a specific topic and user.
-    
+
     Returns messages sorted by timestamp (newest first).
     """
     # First check if the topic exists
@@ -49,13 +75,13 @@ def get_topic_messages(
     topic = repo.get(topic_id)
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")
-    
+
     service = TopicSearchService(db)
     messages = service.get_messages_by_topic(user_id, topic_id, limit)
-    
+
     if not messages:
         return []
-    
+
     return service.format_topic_messages(messages)
 
 @router.get("/user/{user_id}", response_model=List[Dict[str, Any]])
@@ -65,15 +91,15 @@ def get_user_topics(
 ):
     """
     Get all topics for a specific user.
-    
+
     Returns a list of topics the user has discussed in their messages.
     """
     service = TopicSearchService(db)
     topics = service.get_user_topics(user_id)
-    
+
     if not topics:
         return []
-    
+
     return [
         {
             "id": topic.id,
