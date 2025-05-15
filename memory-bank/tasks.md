@@ -68,7 +68,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Test coverage implemented in `tests/test_fact_patterns.py`
   - [x] Create user fact extraction service
   - [x] Implement user fact storage logic
-  - [ ] Create user fact retrieval endpoints
+  - [x] Create user fact retrieval endpoints
   - [ ] Add relevance scoring for fact retrieval
 - [ ] **Implement Tier 2: Recent History**
   - [ ] Create conversation history service
