@@ -102,7 +102,12 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Integrated with existing `TopicExtractor` service
     - Added fallback to direct keyword matching
     - Verified extraction of multiple topics from queries
-  - [ ] Create memory prioritization logic
+  - [x] Create memory prioritization logic
+    - Implemented scoring and prioritization for user facts based on query topics
+    - Added filtering and prioritization for recent memories based on query content
+    - Created topic memory prioritization based on query topics
+    - Added memory query type classification for different types of memory queries
+    - Created comprehensive test coverage in `tests/test_memory_prioritization.py`
   - [ ] Build memory context formatting
 
 ## Phase 4: OpenAI Integration & API Endpoints

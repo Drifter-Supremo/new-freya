@@ -74,11 +74,14 @@
   - Assembles memory context from user facts, recent history, and topic memories
   - Prioritizes memories for memory-specific queries
   - Maintains backward compatibility with existing function-based approach
-- Created comprehensive test coverage in `tests/test_memory_query_detection.py`
-  - Tests for direct memory questions, recall requests, topic-specific recall
-  - Tests for previous conversation references, fact checking, memory keywords
-  - Tests for non-memory queries to ensure correct classification
-  - Tests for topic extraction from queries
+- Implemented memory prioritization logic:
+  - `_prioritize_facts_by_topics`: Scores and prioritizes user facts based on query topics
+  - `_prioritize_recent_memories`: Filters and prioritizes recent memories based on query content
+  - `_prioritize_topic_memories`: Adjusts topic memories based on query topics
+  - `_classify_memory_query_type`: Classifies memory queries into specific types (recall_verification, content_recall, temporal_recall, etc.)
+- Created comprehensive test coverage:
+  - `tests/test_memory_query_detection.py`: Tests for memory query detection and topic extraction
+  - `tests/test_memory_prioritization.py`: Tests for memory prioritization logic and query classification
 - Added example script in `scripts/test_memory_detection.py`
   - Demonstrates memory query detection without requiring database access
   - Shows topic extraction from various types of queries

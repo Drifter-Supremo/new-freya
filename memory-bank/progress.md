@@ -8,7 +8,14 @@
 - [x] Created `MemoryContextBuilder` class in `app/core/memory_context_service.py`
 - [x] Implemented memory query detection with regex patterns and keyword matching
 - [x] Added topic extraction from queries with integration to existing `TopicExtractor`
-- [x] Created comprehensive test coverage in `tests/test_memory_query_detection.py`
+- [x] Implemented memory prioritization logic:
+  - Scoring and prioritization for user facts based on query topics
+  - Filtering and prioritization for recent memories based on query content
+  - Topic memory prioritization based on query topics
+  - Memory query type classification for different types of memory queries
+- [x] Created comprehensive test coverage:
+  - `tests/test_memory_query_detection.py` for memory query detection
+  - `tests/test_memory_prioritization.py` for memory prioritization logic
 - [x] Added example script in `scripts/test_memory_detection.py`
 - [x] Updated API endpoints to use the new memory context builder
 

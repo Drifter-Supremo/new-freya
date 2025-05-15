@@ -203,6 +203,7 @@ class MemoryContextBuilder:
         - Increase the number of topic memories
         - Prioritize recent memories that match the query
         - Add a memory_query_topics field with extracted topics
+        - Adjust relevance scores based on query content
 
         Args:
             memory_context: The current memory context
@@ -217,9 +218,197 @@ class MemoryContextBuilder:
         # Add the extracted topics to the context
         memory_context["memory_query_topics"] = query_topics
 
-        # For memory queries, we might want to add additional context or processing here
+        # 1. Prioritize user facts based on query topics
+        if memory_context["user_facts"] and query_topics:
+            memory_context["user_facts"] = self._prioritize_facts_by_topics(
+                memory_context["user_facts"],
+                query_topics
+            )
+
+        # 2. Filter and prioritize recent memories based on query content
+        if memory_context["recent_memories"]:
+            memory_context["recent_memories"] = self._prioritize_recent_memories(
+                memory_context["recent_memories"],
+                query
+            )
+
+        # 3. Adjust topic memories based on query topics
+        if memory_context["topic_memories"]:
+            memory_context["topic_memories"] = self._prioritize_topic_memories(
+                memory_context["topic_memories"],
+                query_topics
+            )
+
+        # 4. Add memory query type classification
+        memory_context["memory_query_type"] = self._classify_memory_query_type(query)
 
         return memory_context
+
+    def _prioritize_facts_by_topics(self, facts: List[Dict[str, Any]], topics: List[str]) -> List[Dict[str, Any]]:
+        """
+        Prioritize user facts based on query topics.
+
+        Args:
+            facts: List of user facts
+            topics: List of topics extracted from the query
+
+        Returns:
+            Prioritized list of user facts
+        """
+        # Convert topics to lowercase for case-insensitive matching
+        topics_lower = [topic.lower() for topic in topics]
+
+        # Score each fact based on relevance to topics
+        scored_facts = []
+        for fact in facts:
+            score = fact.get("confidence", 0)  # Start with existing confidence
+
+            # Boost score if fact type matches a topic
+            if fact["type"].lower() in topics_lower:
+                score += 30
+
+            # Boost score if fact value contains a topic
+            for topic in topics_lower:
+                if topic in fact["value"].lower():
+                    score += 20
+                    break
+
+            # Add the fact with its new score
+            fact_copy = fact.copy()
+            fact_copy["confidence"] = min(100, score)  # Cap at 100
+            scored_facts.append((fact_copy, score))
+
+        # Sort by score (descending) and return the facts
+        scored_facts.sort(key=lambda x: x[1], reverse=True)
+        return [fact for fact, _ in scored_facts]
+
+    def _prioritize_recent_memories(self, memories: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+        """
+        Filter and prioritize recent memories based on query content.
+
+        Args:
+            memories: List of recent memories
+            query: The user query
+
+        Returns:
+            Filtered and prioritized list of recent memories
+        """
+        # Clean query for matching
+        query_lower = query.lower()
+        query_terms = re.sub(r'[^\w\s]', ' ', query_lower).split()
+
+        # Score each memory based on relevance to query
+        scored_memories = []
+        for memory in memories:
+            content_lower = memory.get("content", "").lower()
+
+            # Base score - more recent messages get higher base score
+            # Assuming memories are already sorted by recency (newest first)
+            base_score = 50
+
+            # Calculate term match score
+            term_match_score = 0
+            for term in query_terms:
+                if term in content_lower and len(term) > 3:  # Only consider meaningful terms
+                    term_match_score += 10
+
+            # Calculate exact phrase match score
+            phrase_match_score = 0
+            for i in range(len(query_terms) - 1):
+                phrase = f"{query_terms[i]} {query_terms[i+1]}"
+                if phrase in content_lower:
+                    phrase_match_score += 15
+
+            # Calculate final score
+            final_score = base_score + term_match_score + phrase_match_score
+
+            # Only include memories with a minimum score
+            if final_score > 50:  # Only include if it has some relevance
+                memory_copy = memory.copy()
+                memory_copy["relevance"] = min(100, final_score)  # Cap at 100
+                scored_memories.append((memory_copy, final_score))
+
+        # If we have too few memories, include some regardless of score
+        if len(scored_memories) < 3 and memories:
+            for memory in memories[:3]:
+                if not any(m[0].get("content") == memory.get("content") for m in scored_memories):
+                    memory_copy = memory.copy()
+                    memory_copy["relevance"] = 50  # Default relevance
+                    scored_memories.append((memory_copy, 50))
+
+        # Sort by score (descending) and return the memories
+        scored_memories.sort(key=lambda x: x[1], reverse=True)
+        return [memory for memory, _ in scored_memories[:5]]  # Limit to top 5
+
+    def _prioritize_topic_memories(self, topic_memories: List[Dict[str, Any]], query_topics: List[str]) -> List[Dict[str, Any]]:
+        """
+        Adjust topic memories based on query topics.
+
+        Args:
+            topic_memories: List of topic memories
+            query_topics: List of topics extracted from the query
+
+        Returns:
+            Adjusted list of topic memories
+        """
+        # Convert query topics to lowercase for case-insensitive matching
+        query_topics_lower = [topic.lower() for topic in query_topics]
+
+        # Score each topic memory based on relevance to query topics
+        scored_topic_memories = []
+        for topic_memory in topic_memories:
+            topic_name = topic_memory.get("topic", {}).get("name", "").lower()
+            base_score = topic_memory.get("topic", {}).get("relevance", 0)
+
+            # Boost score if topic name matches a query topic
+            if topic_name in query_topics_lower:
+                base_score += 30
+
+            # Boost score for partial matches
+            for query_topic in query_topics_lower:
+                if query_topic in topic_name or topic_name in query_topic:
+                    base_score += 15
+                    break
+
+            # Add the topic memory with its new score
+            topic_memory_copy = topic_memory.copy()
+            topic_memory_copy["topic"] = topic_memory["topic"].copy()
+            topic_memory_copy["topic"]["relevance"] = min(100, base_score)  # Cap at 100
+            scored_topic_memories.append((topic_memory_copy, base_score))
+
+        # Sort by score (descending) and return the topic memories
+        scored_topic_memories.sort(key=lambda x: x[1], reverse=True)
+        return [topic_memory for topic_memory, _ in scored_topic_memories]
+
+    def _classify_memory_query_type(self, query: str) -> str:
+        """
+        Classify the type of memory query.
+
+        Args:
+            query: The user query
+
+        Returns:
+            Memory query type classification
+        """
+        query_lower = query.lower()
+
+        # Check for specific memory query types
+        if re.search(r'(?i)do you remember', query_lower):
+            return "recall_verification"
+        elif re.search(r'(?i)what did (i|we|you) (say|tell|ask|talk|mention)', query_lower):
+            return "content_recall"
+        elif re.search(r'(?i)when did (i|we) (discuss|talk about|mention|say)', query_lower):
+            return "temporal_recall"
+        elif re.search(r'(?i)have (i|we) (talked|spoken|discussed|mentioned)', query_lower):
+            return "existence_verification"
+        elif re.search(r'(?i)what do you know about my', query_lower):
+            return "knowledge_query"
+        elif re.search(r'(?i)(last time|previously|earlier|before)', query_lower):
+            return "previous_conversation"
+        elif re.search(r'(?i)(didn\'t|did) (i|we) (talk|speak|discuss|mention|tell)', query_lower):
+            return "fact_checking"
+        else:
+            return "general_memory_query"
 
 
 # For backward compatibility, keep the function-based approach
