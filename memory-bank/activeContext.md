@@ -24,6 +24,7 @@
 - Node.js backend deprecated; frontend is complete and stable.
 
 - Regex patterns for user fact extraction have been ported to `utils/fact_patterns.py` and validated with comprehensive test coverage in `tests/test_fact_patterns.py`
+- User fact storage logic implemented and tested (facts extracted from messages are persisted to DB; duplicate handling verified)
 ## Next Steps
 
 1. Document system architecture and design patterns.

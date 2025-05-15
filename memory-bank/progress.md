@@ -43,6 +43,7 @@
 
 - Memory context assembly engine
 - [x] Port regex patterns from legacy code (patterns ported and tested via `utils/fact_patterns.py` and `tests/test_fact_patterns.py`)
+- [x] Implement and test user fact storage logic (facts extracted from messages and persisted to DB; duplicate handling verified)
 - API endpoints for chat, memory, and topic search
 - Firestore to PostgreSQL migration tooling
 - Structured logging and error handling
