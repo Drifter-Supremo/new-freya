@@ -13,9 +13,14 @@
   - Filtering and prioritization for recent memories based on query content
   - Topic memory prioritization based on query topics
   - Memory query type classification for different types of memory queries
+- [x] Built memory context formatting:
+  - Implemented `format_memory_context` method to create structured text representation
+  - Added specialized formatting for different memory query types
+  - Created helper methods for formatting different types of memories
 - [x] Created comprehensive test coverage:
   - `tests/test_memory_query_detection.py` for memory query detection
   - `tests/test_memory_prioritization.py` for memory prioritization logic
+  - `tests/test_memory_formatting.py` for memory context formatting
 - [x] Added example script in `scripts/test_memory_detection.py`
 - [x] Updated API endpoints to use the new memory context builder
 

@@ -79,9 +79,19 @@
   - `_prioritize_recent_memories`: Filters and prioritizes recent memories based on query content
   - `_prioritize_topic_memories`: Adjusts topic memories based on query topics
   - `_classify_memory_query_type`: Classifies memory queries into specific types (recall_verification, content_recall, temporal_recall, etc.)
+- Built memory context formatting:
+  - `format_memory_context`: Creates structured text representation of memory context
+  - `_format_user_facts`: Formats user facts with confidence indicators
+  - `_format_topic_memories_for_recall`: Formats topic memories for recall-type queries
+  - `_format_recent_memories_for_recall`: Formats recent memories for recall-type queries
+  - `_format_memories_with_timestamps`: Formats memories with timestamps for temporal queries
+  - `_format_memories_for_existence_verification`: Formats memories for existence verification queries
+  - `_format_memories_for_knowledge_query`: Formats memories for knowledge queries
+  - `_format_default_memory_context`: Formats default memory context for general queries
 - Created comprehensive test coverage:
   - `tests/test_memory_query_detection.py`: Tests for memory query detection and topic extraction
   - `tests/test_memory_prioritization.py`: Tests for memory prioritization logic and query classification
+  - `tests/test_memory_formatting.py`: Tests for memory context formatting
 - Added example script in `scripts/test_memory_detection.py`
   - Demonstrates memory query detection without requiring database access
   - Shows topic extraction from various types of queries

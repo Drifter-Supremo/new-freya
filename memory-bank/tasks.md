@@ -108,7 +108,15 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Created topic memory prioritization based on query topics
     - Added memory query type classification for different types of memory queries
     - Created comprehensive test coverage in `tests/test_memory_prioritization.py`
-  - [ ] Build memory context formatting
+  - [x] Build memory context formatting
+    - Implemented `format_memory_context` method to create structured text representation
+    - Added specialized formatting for different memory query types:
+      - Recall verification: Focus on topic memories and recent memories
+      - Temporal recall: Format memories with timestamps
+      - Existence verification: Provide yes/no with evidence
+      - Knowledge query: Focus on facts and topic memories
+    - Created helper methods for formatting different types of memories
+    - Added comprehensive test coverage in `tests/test_memory_formatting.py`
 
 ## Phase 4: OpenAI Integration & API Endpoints
 - [ ] **Implement OpenAI API client**

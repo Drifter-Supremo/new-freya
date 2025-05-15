@@ -3,7 +3,7 @@ memory_context_service.py - Service for assembling memory context for chat compl
 """
 
 import re
-from typing import Dict, List, Any, Optional, Tuple, Set
+from typing import Dict, List, Any
 from sqlalchemy.orm import Session
 from app.core.user_fact_service import get_relevant_facts_for_context, format_facts_for_context
 from app.core.conversation_history_service import ConversationHistoryService
@@ -193,7 +193,424 @@ class MemoryContextBuilder:
         if memory_context["is_memory_query"]:
             memory_context = self._prioritize_memories_for_memory_query(memory_context, query)
 
+        # 5. Format the memory context for chat completion
+        formatted_context = self.format_memory_context(memory_context, query)
+        memory_context["formatted_context"] = formatted_context
+
         return memory_context
+
+    def format_memory_context(self, memory_context: Dict[str, Any], query: str = "") -> str:
+        """
+        Format the memory context for chat completion.
+
+        This creates a structured text representation of the memory context
+        that can be included in the chat completion prompt.
+
+        Args:
+            memory_context: The memory context to format
+            query: The user query (optional)
+
+        Returns:
+            Formatted memory context as a string
+        """
+        is_memory_query = memory_context.get("is_memory_query", False)
+        memory_query_type = memory_context.get("memory_query_type", "general_memory_query")
+
+        # Start with a header
+        formatted_context = "### Memory Context ###\n\n"
+
+        # Format user facts
+        if memory_context["user_facts"]:
+            formatted_context += self._format_user_facts(memory_context["user_facts"])
+
+        # Format memories based on query type
+        if is_memory_query:
+            # For memory queries, format based on the query type
+            if memory_query_type in ["recall_verification", "content_recall", "fact_checking"]:
+                # For recall questions, prioritize topic memories and recent memories
+                formatted_context += self._format_topic_memories_for_recall(memory_context["topic_memories"])
+                formatted_context += self._format_recent_memories_for_recall(memory_context["recent_memories"])
+
+            elif memory_query_type in ["temporal_recall", "previous_conversation"]:
+                # For temporal questions, focus on when things were discussed
+                formatted_context += self._format_memories_with_timestamps(
+                    memory_context["recent_memories"],
+                    memory_context["topic_memories"]
+                )
+
+            elif memory_query_type == "existence_verification":
+                # For existence verification, provide a simple yes/no with evidence
+                formatted_context += self._format_memories_for_existence_verification(
+                    memory_context["topic_memories"],
+                    memory_context["recent_memories"],
+                    memory_context.get("memory_query_topics", [])
+                )
+
+            elif memory_query_type == "knowledge_query":
+                # For knowledge queries, focus on facts and topic memories
+                formatted_context += self._format_memories_for_knowledge_query(
+                    memory_context["user_facts"],
+                    memory_context["topic_memories"],
+                    memory_context.get("memory_query_topics", [])
+                )
+
+            else:
+                # Default formatting for other memory queries
+                formatted_context += self._format_default_memory_context(memory_context)
+        else:
+            # For non-memory queries, use default formatting
+            formatted_context += self._format_default_memory_context(memory_context)
+
+        return formatted_context
+
+    def _format_user_facts(self, facts: List[Dict[str, Any]]) -> str:
+        """
+        Format user facts for the memory context.
+
+        Args:
+            facts: List of user facts
+
+        Returns:
+            Formatted user facts as a string
+        """
+        if not facts:
+            return ""
+
+        formatted_facts = "## User Facts\n"
+
+        # Sort facts by confidence (descending)
+        sorted_facts = sorted(facts, key=lambda x: x.get("confidence", 0), reverse=True)
+
+        # Format each fact
+        for fact in sorted_facts:
+            confidence = fact.get("confidence", 0)
+            confidence_indicator = "★" * (1 + min(4, int(confidence / 20)))  # 1-5 stars based on confidence
+            formatted_facts += f"- {fact['type'].capitalize()}: {fact['value']} {confidence_indicator}\n"
+
+        return formatted_facts + "\n"
+
+    def _format_topic_memories_for_recall(self, topic_memories: List[Dict[str, Any]]) -> str:
+        """
+        Format topic memories for recall-type queries.
+
+        Args:
+            topic_memories: List of topic memories
+
+        Returns:
+            Formatted topic memories as a string
+        """
+        if not topic_memories:
+            return ""
+
+        formatted_memories = "## Topic-Related Memories\n"
+
+        # Sort topic memories by relevance (descending)
+        sorted_topics = sorted(
+            topic_memories,
+            key=lambda x: x.get("topic", {}).get("relevance", 0),
+            reverse=True
+        )
+
+        # Format each topic memory
+        for topic_memory in sorted_topics:
+            topic_name = topic_memory.get("topic", {}).get("name", "Unknown Topic")
+            relevance = topic_memory.get("topic", {}).get("relevance", 0)
+
+            # Only include topics with reasonable relevance
+            if relevance < 30:
+                continue
+
+            formatted_memories += f"### {topic_name}\n"
+
+            # Format messages for this topic
+            messages = topic_memory.get("messages", [])
+            if messages:
+                for message in messages:
+                    content = message.get("content", "")
+                    formatted_memories += f"- {content}\n"
+
+            formatted_memories += "\n"
+
+        return formatted_memories
+
+    def _format_recent_memories_for_recall(self, recent_memories: List[Dict[str, Any]]) -> str:
+        """
+        Format recent memories for recall-type queries.
+
+        Args:
+            recent_memories: List of recent memories
+
+        Returns:
+            Formatted recent memories as a string
+        """
+        if not recent_memories:
+            return ""
+
+        formatted_memories = "## Recent Conversation History\n"
+
+        # Sort by relevance if available, otherwise assume they're already sorted by recency
+        if recent_memories and "relevance" in recent_memories[0]:
+            sorted_memories = sorted(
+                recent_memories,
+                key=lambda x: x.get("relevance", 0),
+                reverse=True
+            )
+        else:
+            sorted_memories = recent_memories
+
+        # Format each memory
+        for memory in sorted_memories[:5]:  # Limit to top 5
+            content = memory.get("content", "")
+            relevance = memory.get("relevance", 0)
+
+            # Only include memories with reasonable relevance if relevance is available
+            if "relevance" in memory and relevance < 30:
+                continue
+
+            formatted_memories += f"- {content}\n"
+
+        return formatted_memories + "\n"
+
+    def _format_memories_with_timestamps(self, recent_memories: List[Dict[str, Any]], topic_memories: List[Dict[str, Any]]) -> str:
+        """
+        Format memories with timestamps for temporal queries.
+
+        Args:
+            recent_memories: List of recent memories
+            topic_memories: List of topic memories
+
+        Returns:
+            Formatted memories with timestamps as a string
+        """
+        if not recent_memories and not topic_memories:
+            return ""
+
+        formatted_memories = "## Conversation Timeline\n"
+
+        # Collect all messages with timestamps
+        all_messages = []
+
+        # Add recent memories
+        for memory in recent_memories:
+            if "timestamp" in memory:
+                all_messages.append({
+                    "content": memory.get("content", ""),
+                    "timestamp": memory.get("timestamp", ""),
+                    "relevance": memory.get("relevance", 0)
+                })
+
+        # Add topic memories
+        for topic_memory in topic_memories:
+            topic_name = topic_memory.get("topic", {}).get("name", "")
+            messages = topic_memory.get("messages", [])
+
+            for message in messages:
+                if "timestamp" in message:
+                    all_messages.append({
+                        "content": message.get("content", ""),
+                        "timestamp": message.get("timestamp", ""),
+                        "topic": topic_name,
+                        "relevance": topic_memory.get("topic", {}).get("relevance", 0)
+                    })
+
+        # Sort by timestamp (newest first)
+        sorted_messages = sorted(
+            all_messages,
+            key=lambda x: x.get("timestamp", ""),
+            reverse=True
+        )
+
+        # Format each message with timestamp
+        for message in sorted_messages:
+            content = message.get("content", "")
+            timestamp = message.get("timestamp", "")
+            topic = message.get("topic", "")
+
+            # Format timestamp
+            if timestamp:
+                try:
+                    # Convert ISO format to more readable format
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                    formatted_date = dt.strftime("%b %d, %Y")
+                    formatted_time = dt.strftime("%I:%M %p")
+                    timestamp_str = f"{formatted_date} at {formatted_time}"
+                except:
+                    # If parsing fails, use the original timestamp
+                    timestamp_str = timestamp
+            else:
+                timestamp_str = "Unknown time"
+
+            # Add topic if available
+            topic_str = f" (Topic: {topic})" if topic else ""
+
+            formatted_memories += f"- {timestamp_str}{topic_str}: {content}\n"
+
+        return formatted_memories + "\n"
+
+    def _format_memories_for_existence_verification(self, topic_memories: List[Dict[str, Any]], recent_memories: List[Dict[str, Any]], query_topics: List[str]) -> str:
+        """
+        Format memories for existence verification queries.
+
+        Args:
+            topic_memories: List of topic memories
+            recent_memories: List of recent memories
+            query_topics: List of topics extracted from the query
+
+        Returns:
+            Formatted memories for existence verification as a string
+        """
+        if not topic_memories and not recent_memories:
+            return "## Memory Verification\nNo relevant memories found about this topic.\n\n"
+
+        # Check if we have any relevant memories
+        has_relevant_memories = False
+
+        # Check topic memories
+        for topic_memory in topic_memories:
+            topic_name = topic_memory.get("topic", {}).get("name", "").lower()
+            relevance = topic_memory.get("topic", {}).get("relevance", 0)
+
+            # Check if topic is relevant to query
+            if relevance >= 50 or any(query_topic.lower() in topic_name for query_topic in query_topics):
+                has_relevant_memories = True
+                break
+
+        # Check recent memories if no relevant topic memories found
+        if not has_relevant_memories and recent_memories:
+            for memory in recent_memories:
+                relevance = memory.get("relevance", 0)
+                if relevance >= 50:
+                    has_relevant_memories = True
+                    break
+
+        # Format the verification result
+        formatted_memories = "## Memory Verification\n"
+
+        if has_relevant_memories:
+            formatted_memories += "Yes, we have discussed this topic before. Here are the relevant memories:\n\n"
+
+            # Add topic memories
+            if topic_memories:
+                formatted_memories += self._format_topic_memories_for_recall(topic_memories)
+
+            # Add recent memories
+            if recent_memories:
+                formatted_memories += self._format_recent_memories_for_recall(recent_memories)
+        else:
+            formatted_memories += "No, we haven't discussed this topic in detail before.\n\n"
+
+        return formatted_memories
+
+    def _format_memories_for_knowledge_query(self, user_facts: List[Dict[str, Any]], topic_memories: List[Dict[str, Any]], query_topics: List[str]) -> str:
+        """
+        Format memories for knowledge queries.
+
+        Args:
+            user_facts: List of user facts
+            topic_memories: List of topic memories
+            query_topics: List of topics extracted from the query
+
+        Returns:
+            Formatted memories for knowledge queries as a string
+        """
+        formatted_memories = "## Knowledge About User\n"
+
+        # Filter user facts by query topics
+        relevant_facts = []
+        for fact in user_facts:
+            fact_type = fact.get("type", "").lower()
+            fact_value = fact.get("value", "").lower()
+
+            # Check if fact is relevant to query topics
+            if any(query_topic.lower() in fact_type or query_topic.lower() in fact_value for query_topic in query_topics):
+                relevant_facts.append(fact)
+
+        # Format relevant facts
+        if relevant_facts:
+            formatted_memories += "### Known Facts\n"
+            for fact in relevant_facts:
+                formatted_memories += f"- {fact['type'].capitalize()}: {fact['value']}\n"
+            formatted_memories += "\n"
+
+        # Format topic memories
+        if topic_memories:
+            formatted_memories += "### Related Conversations\n"
+
+            # Filter topic memories by query topics
+            relevant_topics = []
+            for topic_memory in topic_memories:
+                topic_name = topic_memory.get("topic", {}).get("name", "").lower()
+                relevance = topic_memory.get("topic", {}).get("relevance", 0)
+
+                # Check if topic is relevant to query
+                if relevance >= 30 or any(query_topic.lower() in topic_name for query_topic in query_topics):
+                    relevant_topics.append(topic_memory)
+
+            # Format relevant topic memories
+            for topic_memory in relevant_topics:
+                topic_name = topic_memory.get("topic", {}).get("name", "")
+                messages = topic_memory.get("messages", [])
+
+                if messages:
+                    formatted_memories += f"#### {topic_name}\n"
+                    for message in messages:
+                        content = message.get("content", "")
+                        formatted_memories += f"- {content}\n"
+                    formatted_memories += "\n"
+
+        if not relevant_facts and not topic_memories:
+            formatted_memories += "I don't have much information about this topic yet.\n\n"
+
+        return formatted_memories
+
+    def _format_default_memory_context(self, memory_context: Dict[str, Any]) -> str:
+        """
+        Format default memory context for general queries.
+
+        Args:
+            memory_context: The memory context to format
+
+        Returns:
+            Formatted default memory context as a string
+        """
+        formatted_context = ""
+
+        # Format topic memories if available
+        if memory_context["topic_memories"]:
+            formatted_context += "## Relevant Topics\n"
+
+            # Sort topic memories by relevance
+            sorted_topics = sorted(
+                memory_context["topic_memories"],
+                key=lambda x: x.get("topic", {}).get("relevance", 0),
+                reverse=True
+            )
+
+            # Format each topic memory
+            for topic_memory in sorted_topics[:3]:  # Limit to top 3
+                topic_name = topic_memory.get("topic", {}).get("name", "")
+                messages = topic_memory.get("messages", [])
+
+                if messages:
+                    formatted_context += f"### {topic_name}\n"
+                    for message in messages[:2]:  # Limit to top 2 messages per topic
+                        content = message.get("content", "")
+                        formatted_context += f"- {content}\n"
+                    formatted_context += "\n"
+
+        # Format recent memories if available
+        if memory_context["recent_memories"]:
+            formatted_context += "## Recent Conversation\n"
+
+            # Format recent memories (limit to top 3)
+            for memory in memory_context["recent_memories"][:3]:
+                content = memory.get("content", "")
+                formatted_context += f"- {content}\n"
+
+            formatted_context += "\n"
+
+        return formatted_context
 
     def _prioritize_memories_for_memory_query(self, memory_context: Dict[str, Any], query: str) -> Dict[str, Any]:
         """
