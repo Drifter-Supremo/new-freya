@@ -20,8 +20,10 @@
 ## Recent Changes
 
 - Project brief and product context documentation established.
+- Ported regex patterns from legacy code to `utils/fact_patterns.py` (Tier 1 User Facts)
 - Node.js backend deprecated; frontend is complete and stable.
 
+- Regex patterns for user fact extraction have been ported to `utils/fact_patterns.py` and validated with comprehensive test coverage in `tests/test_fact_patterns.py`
 ## Next Steps
 
 1. Document system architecture and design patterns.

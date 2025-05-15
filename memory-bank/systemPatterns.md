@@ -33,6 +33,7 @@
 - Service layer for business logic and memory context assembly.
 - DTOs (Data Transfer Objects) for API request/response validation.
 - Error handling middleware for consistent fallback behavior.
+- Regex patterns for user fact extraction ported to `utils/fact_patterns.py` with comprehensive test coverage in `tests/test_fact_patterns.py`
 
 ## Component Relationships
 

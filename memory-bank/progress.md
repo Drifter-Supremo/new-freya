@@ -42,6 +42,7 @@
 ## What's Left to Build
 
 - Memory context assembly engine
+- [x] Port regex patterns from legacy code (patterns ported and tested via `utils/fact_patterns.py` and `tests/test_fact_patterns.py`)
 - API endpoints for chat, memory, and topic search
 - Firestore to PostgreSQL migration tooling
 - Structured logging and error handling
@@ -53,6 +54,11 @@
 - Backend rebuild is in the implementation phase, with database schema and models complete.
 - Node.js backend is deprecated and not in use.
 
+## Security Improvements
+
+- Removed hardcoded fine-tuned model ID from js/apiLogic.js and replaced with [REDACTED_MODEL_ID]
+- Removed hardcoded Firebase configuration (API key, authDomain, projectId, storageBucket, messagingSenderId, appId, measurementId) from js/firebaseEnv.js and replaced with [REDACTED_*] placeholders
+- Verified no actual secrets in script.js.backup, summarizerLogic.js, and firebaseLogic.js (only placeholders or logic)
 ## Known Issues
 
 - No critical issues at this stage; backend development is on track.

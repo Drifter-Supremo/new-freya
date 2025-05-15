@@ -63,8 +63,10 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
 
 ## Phase 3: Memory System Implementation
 - [ ] **Implement Tier 1: User Facts**
-  - [ ] Port regex patterns from legacy code
-  - [ ] Create user fact extraction service
+  - [x] Port regex patterns from legacy code and implement tests
+    - Patterns ported to `utils/fact_patterns.py`
+    - Test coverage implemented in `tests/test_fact_patterns.py`
+  - [x] Create user fact extraction service
   - [ ] Implement user fact storage logic
   - [ ] Create user fact retrieval endpoints
   - [ ] Add relevance scoring for fact retrieval
