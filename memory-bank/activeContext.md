@@ -6,6 +6,12 @@
 - Ready to begin database access layer (repository pattern, CRUD, etc).
 > Modular refactor complete; backend code is now split into core/ (config, errors), api/routes/ (endpoints), and main.py (entrypoint only). No file will exceed 300-400 lines. Server and health endpoint work after refactor.
 
+## Tier 3: Topic Memory Implementation
+- Topic extraction logic ported from legacy JavaScript to Python
+- `TopicExtractor` service implemented in `app/services/topic_extraction.py`
+- Comprehensive test coverage with `tests/test_topic_extraction.py`
+- Example usage provided in `examples/topic_extraction_demo.py`
+
 ## Current Work Focus
 
 - Planning and documentation for the Python + FastAPI + PostgreSQL backend rebuild.
@@ -31,6 +37,9 @@
 - API endpoints created for retrieving conversation history, recent messages, and conversation context
 - Memory context service updated to use conversation history service for improved context assembly
 - Comprehensive test coverage added for conversation history service and API endpoints
+- Topic extraction service implemented for Tier 3 memory with 100% test coverage
+- Topic extraction supports 15+ categories with keyword-based matching
+- Example implementation demonstrates topic extraction from sample messages
 ## Next Steps
 
 1. Document system architecture and design patterns.

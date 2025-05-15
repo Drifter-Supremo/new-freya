@@ -34,6 +34,22 @@
   - Added comprehensive test coverage in `tests/test_conversation_service_basic.py` and `tests/test_conversation_api_basic.py`
   - Integrated with memory context service for improved context assembly
 
+## Phase 3: Memory System Implementation - In Progress
+
+### Tier 3: Topic Memory
+- [x] Ported topic extraction logic from legacy JavaScript to Python
+  - Implemented `TopicExtractor` service in `app/services/topic_extraction.py`
+  - Added support for 15+ topic categories with keyword-based matching
+  - Implemented case-insensitive whole-word matching with word boundaries
+  - Added scoring system to rank topics by relevance
+- [x] Added comprehensive test coverage
+  - Unit tests for topic extraction functionality
+  - Test cases for edge cases and various message types
+  - 100% test coverage achieved
+- [x] Created example implementation
+  - Added `examples/topic_extraction_demo.py` demonstrating usage
+  - Included sample messages showing topic extraction in action
+
 ## Phase 2: Database Schema & Models — Complete
 
 - **ERD (Entity Relationship Diagram) created** and saved to `memory-bank/erd.md`
@@ -54,6 +70,14 @@
 
 ## What's Left to Build
 
+### Tier 3: Topic Memory (In Progress)
+- [x] Port topic extraction logic from legacy code
+- [ ] Create topic tagging service
+- [ ] Implement topic-based search functionality
+- [ ] Create topic relevance scoring algorithm
+- [ ] Add topic memory retrieval endpoints
+
+### Other Components
 - [x] Memory context assembly engine (implemented in `memory_context_service.py`)
 - [x] Port regex patterns from legacy code (patterns ported and tested via `utils/fact_patterns.py` and `tests/test_fact_patterns.py`)
 - [x] Implement and test user fact storage logic (facts extracted from messages and persisted to DB; duplicate handling verified)

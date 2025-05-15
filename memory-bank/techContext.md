@@ -9,16 +9,34 @@
 
 ## Development Setup
 
-- Backend stack: FastAPI, SQLModel, SQLAlchemy, psycopg2-binary, python-dotenv, black, isort, flake8
-- Python version: 3.12.10 (Windows)
+### Core Dependencies
+- Python 3.12.10 (Windows)
+- FastAPI for the web framework
+- SQLAlchemy/SQLModel for ORM
+- PostgreSQL with psycopg2-binary driver
+- python-dotenv for environment management
+- Alembic for database migrations
+
+### Development Tools
+- black, isort, flake8 for code formatting and linting
+- pytest for testing
+- Uvicorn as the ASGI server
+
+### Environment
 - Virtual environment: Working and activated
 - All dependencies installed successfully with no build errors
 - requirements.txt restored to the original stack
-- Next step: Set up environment variables using .env.example and python-dotenv
+- Environment variables configured via .env file
+
+### Infrastructure
 - PostgreSQL database instance (local for dev, Railway for prod)
-- Alembic for database migrations
 - GitHub Actions for CI/CD pipeline
 - Node.js and pnpm for frontend (already complete)
+
+### Topic Extraction
+- Implemented in `app/services/topic_extraction.py`
+- Test coverage in `tests/test_topic_extraction.py`
+- Example usage in `examples/topic_extraction_demo.py`
 
 ## Technical Constraints
 
@@ -29,6 +47,17 @@
 
 ## Dependencies
 
-- FastAPI, SQLModel/SQLAlchemy, Uvicorn, python-dotenv, Alembic, psycopg2 or asyncpg
-- OpenAI Python SDK
-- (Frontend dependencies already managed)
+### Backend
+- **Web Framework**: FastAPI
+- **Database**: SQLAlchemy, SQLModel, psycopg2-binary, asyncpg
+- **Development**: black, isort, flake8, pytest
+- **AI**: OpenAI Python SDK
+- **Utilities**: python-dotenv, pydantic, python-multipart
+
+### Topic Extraction
+- **Core**: Built-in Python re module for regex
+- **Testing**: pytest, pytest-cov
+- **Documentation**: Standard Python docstrings
+
+### Frontend
+- (Already managed in the frontend codebase)

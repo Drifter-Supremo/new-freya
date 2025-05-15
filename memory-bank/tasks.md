@@ -76,7 +76,10 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Add conversation context management
   - [x] Optimize query performance for history retrieval
 - [ ] **Implement Tier 3: Topic Memory**
-  - [ ] Port topic extraction logic from legacy code
+  - [x] Port topic extraction logic from legacy code
+    - Implemented `TopicExtractor` class in `app/services/topic_extraction.py`
+    - Added comprehensive test coverage in `tests/test_topic_extraction.py`
+    - Created example usage in `examples/topic_extraction_demo.py`
   - [ ] Create topic tagging service
   - [ ] Implement topic-based search functionality
   - [ ] Create topic relevance scoring algorithm
