@@ -20,6 +20,12 @@
   - Created and tested the `search_topics_by_message_content` method in MemoryQueryRepository
   - Fixed compatibility issues with PostgreSQL function syntax
   - Verified relevance scoring works correctly with different search terms
+- [x] Implement relevance scoring for fact retrieval
+  - Added `get_facts_with_relevance` method to MemoryQueryRepository
+  - Implemented scoring based on fact type weight, text similarity, and term matching
+  - Created a new endpoint `/user-facts/{user_id}/relevant` for accessing facts with relevance scores
+  - Added memory context assembly service for integrating relevant facts into chat context
+  - Comprehensive test coverage in `tests/test_fact_relevance.py` and `tests/test_memory_context.py`
 
 ## Phase 2: Database Schema & Models — Complete
 

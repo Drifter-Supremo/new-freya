@@ -25,6 +25,8 @@
 
 - Regex patterns for user fact extraction have been ported to `utils/fact_patterns.py` and validated with comprehensive test coverage in `tests/test_fact_patterns.py`
 - User fact storage logic implemented and tested (facts extracted from messages are persisted to DB; duplicate handling verified)
+- Relevance scoring for fact retrieval implemented and tested (via `MemoryQueryRepository.get_facts_with_relevance`)
+- Memory context assembly service created for integrating relevant facts into chat context (`memory_context_service.py`)
 ## Next Steps
 
 1. Document system architecture and design patterns.

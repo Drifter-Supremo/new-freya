@@ -69,7 +69,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Create user fact extraction service
   - [x] Implement user fact storage logic
   - [x] Create user fact retrieval endpoints
-  - [ ] Add relevance scoring for fact retrieval
+  - [x] Add relevance scoring for fact retrieval
 - [ ] **Implement Tier 2: Recent History**
   - [ ] Create conversation history service
   - [ ] Implement recent message retrieval logic
