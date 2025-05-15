@@ -2,6 +2,16 @@
 
 > **Important Testing Note**: All database operations must be tested against PostgreSQL (not SQLite) as the production database. PostgreSQL-specific features like full-text search (`TSVECTOR`) are used throughout the application.
 
+## Recent Updates
+
+### Memory Context Builder Implementation (Phase 3)
+- [x] Created `MemoryContextBuilder` class in `app/core/memory_context_service.py`
+- [x] Implemented memory query detection with regex patterns and keyword matching
+- [x] Added topic extraction from queries with integration to existing `TopicExtractor`
+- [x] Created comprehensive test coverage in `tests/test_memory_query_detection.py`
+- [x] Added example script in `scripts/test_memory_detection.py`
+- [x] Updated API endpoints to use the new memory context builder
+
 ## What Works
 
 - **Backend setup phase complete:** Modular FastAPI structure, health and db-health endpoints, PostgreSQL connection pooling, database initialization script, and connection testing endpoint are all working. Developer experience has been smooth and maintainable compared to Node.js.

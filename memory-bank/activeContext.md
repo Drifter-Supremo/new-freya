@@ -64,7 +64,25 @@
   - `/memory/topics` - Retrieve topic-based memory context
   - `/memory/topics/{topic_id}` - Retrieve memory context for a specific topic
   - `/memory/comprehensive` - Retrieve comprehensive memory context
+  - `/memory/query/detect` - Detect if a query is asking about past conversations
 - Updated `memory_context_service.py` to use advanced topic relevance scoring
+
+### Memory Context Builder
+- Implemented `MemoryContextBuilder` class in `app/core/memory_context_service.py`
+  - Detects memory-related queries using regex patterns and keyword matching
+  - Extracts topics from queries with integration to existing `TopicExtractor`
+  - Assembles memory context from user facts, recent history, and topic memories
+  - Prioritizes memories for memory-specific queries
+  - Maintains backward compatibility with existing function-based approach
+- Created comprehensive test coverage in `tests/test_memory_query_detection.py`
+  - Tests for direct memory questions, recall requests, topic-specific recall
+  - Tests for previous conversation references, fact checking, memory keywords
+  - Tests for non-memory queries to ensure correct classification
+  - Tests for topic extraction from queries
+- Added example script in `scripts/test_memory_detection.py`
+  - Demonstrates memory query detection without requiring database access
+  - Shows topic extraction from various types of queries
+  - Provides a simple way to test memory context builder functionality
 - Added comprehensive test coverage in `tests/test_topic_memory_service.py`
 - Created example script in `scripts/test_topic_memory.py` for demonstration
 

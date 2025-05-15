@@ -75,7 +75,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Implement recent message retrieval logic
   - [x] Add conversation context management
   - [x] Optimize query performance for history retrieval
-- [ ] **Implement Tier 3: Topic Memory**
+- [x] **Implement Tier 3: Topic Memory**
   - [x] Port topic extraction logic from legacy code
     - Implemented `TopicExtractor` class in `app/services/topic_extraction.py`
     - Added comprehensive test coverage in `tests/test_topic_extraction.py`
@@ -90,9 +90,18 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Create topic relevance scoring algorithm
   - [x] Add topic memory retrieval endpoints
 - [ ] **Implement memory context builder**
-  - [ ] Create context assembly service
-  - [ ] Implement memory query detection
-  - [ ] Add topic extraction from queries
+  - [x] Create context assembly service
+    - Implemented `MemoryContextBuilder` class in `app/core/memory_context_service.py`
+    - Added comprehensive test coverage in `tests/test_memory_query_detection.py`
+    - Created example script in `scripts/test_memory_detection.py`
+  - [x] Implement memory query detection
+    - Added regex patterns to detect memory-related queries
+    - Implemented keyword-based detection for additional coverage
+    - Created unit tests to verify detection accuracy
+  - [x] Add topic extraction from queries
+    - Integrated with existing `TopicExtractor` service
+    - Added fallback to direct keyword matching
+    - Verified extraction of multiple topics from queries
   - [ ] Create memory prioritization logic
   - [ ] Build memory context formatting
 
