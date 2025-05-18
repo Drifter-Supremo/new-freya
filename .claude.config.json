@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "fetch": {
+      "command": "python3",
+      "args": ["-m", "mcp_server_fetch"],
+      "transport": "stdio"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "transport": "stdio",
+      "env": {}
+    }
+  }
+}

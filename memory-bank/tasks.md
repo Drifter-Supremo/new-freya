@@ -62,7 +62,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Test full-text search functionality with real queries
 
 ## Phase 3: Memory System Implementation
-- [ ] **Implement Tier 1: User Facts**
+- [x] **Implement Tier 1: User Facts**
   - [x] Port regex patterns from legacy code and implement tests
     - Patterns ported to `utils/fact_patterns.py`
     - Test coverage implemented in `tests/test_fact_patterns.py`
