@@ -118,7 +118,7 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Created helper methods for formatting different types of memories
     - Added comprehensive test coverage in `tests/test_memory_formatting.py`
 
-## Phase 4: OpenAI Integration & API Endpoints
+## Phase 4: OpenAI Integration & API Endpoints ✅ [Completed 2025-05-19]
 - [x] **Implement OpenAI API client**
   - [x] Create OpenAI service wrapper
   - [x] Configure fine-tuned model parameters
@@ -134,11 +134,11 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Create dynamic system prompt assembly
   - [x] Add memory context injection
   - [x] Implement conversation state tracking
-- [ ] **Add conversation management endpoints**
-  - [ ] Create endpoint to start new conversation
-  - [ ] Add endpoint to retrieve conversation history
-  - [ ] Implement conversation search endpoint
-  - [ ] Create endpoint for conversation reset/deletion
+- [x] **Add conversation management endpoints**
+  - [x] Create endpoint to start new conversation
+  - [x] Add endpoint to retrieve conversation history
+  - [x] Implement conversation search endpoint
+  - [x] Create endpoint for conversation reset/deletion
 
 ## Phase 5: Frontend Integration & Event System
 - [ ] **Create browser event emitter**

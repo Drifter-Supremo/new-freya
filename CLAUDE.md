@@ -24,6 +24,89 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 \- ALWAYS update ALL relevant/memory-bank docs after every successful task
 
+\### Development Environment - IMPORTANT
+
+\- **Operating System**: Windows with WSL (Windows Subsystem for Linux)
+\- **Python**: Using Windows Python from WSL (venv/Scripts/python.exe)
+\- **Virtual Environment**: Located at `venv/` in project root
+\- **Database**: PostgreSQL (must be running for all operations)
+
+\### Quick Start Guide for Testing
+
+1. **Activate Virtual Environment (Windows from WSL)**:
+   ```bash
+   cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+   # Use Windows Python executable from WSL:
+   venv/Scripts/python.exe
+   ```
+
+2. **Start the FastAPI Server**:
+   ```bash
+   # Option 1: Using the helper script
+   venv/Scripts/python.exe scripts/run_server.py
+   
+   # Option 2: Direct uvicorn
+   venv/Scripts/python.exe -m uvicorn app.main:app --reload
+   ```
+
+3. **Run Tests**:
+   ```bash
+   # Run all tests
+   venv/Scripts/python.exe -m pytest tests/ -v
+   
+   # Run specific test file
+   venv/Scripts/python.exe -m pytest tests/test_conversation_endpoints.py -v
+   
+   # Run comprehensive integration tests
+   venv/Scripts/python.exe scripts/test_all.py
+   ```
+
+\### Common Import Fixes
+
+When imports fail, check these common issues:
+1. `init_db` is in `app.core.init_db`, not `app.core.db`
+2. User model has `username` field, not `name`
+3. User model requires `hashed_password` field
+4. All IDs are integers, not UUIDs
+
+\### Test Data Patterns
+
+1. **Creating Test Users**:
+   ```python
+   from uuid import uuid4
+   unique_id = uuid4().hex[:8]
+   user_data = {
+       "username": f"testuser_{unique_id}",  # NOT "name"
+       "email": f"test_{unique_id}@example.com",
+       "hashed_password": "dummy_password_hash"
+   }
+   ```
+
+2. **Error Response Format**:
+   - Errors return as `{"error": "message"}`, not `{"detail": "message"}`
+   - Validation errors return as `{"error": "Validation error", "details": [...]}`
+
+3. **Session Management in Tests**:
+   - Always get IDs before using them: `user_id = test_user.id`
+   - Use dependency injection for database sessions in tests
+
+\### Database Migrations
+
+When adding new columns or database features:
+```bash
+# Create new migration
+venv/Scripts/python.exe -m alembic revision -m "description"
+
+# Run migrations
+venv/Scripts/python.exe -m alembic upgrade head
+```
+
+\### PostgreSQL Full-Text Search
+
+- Messages table has `content_tsv` column for FTS
+- Trigger automatically populates tsvector on insert/update
+- Search queries use `plainto_tsquery()` for text matching
+
 \### TypeScript and Linting
 
 \- ALWAYS add explicit types to all function parameters, variables, and return types
@@ -71,33 +154,46 @@ Freya AI Companion is a fine-tuned GPT-4.1 Mini AI chatbot with a unique emotion
 
 ## Common Development Commands
 
-### Backend Commands
+### Backend Commands (Windows with WSL)
 ```bash
-# Create/activate virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# Path to project (ALWAYS USE QUOTES for paths with spaces)
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+
+# Python executable (ALWAYS use this path)
+venv/Scripts/python.exe
 
 # Install dependencies
-pip install -r requirements.txt
+venv/Scripts/python.exe -m pip install -r requirements.txt
 
 # Run the backend
-uvicorn app.main:app --reload
+venv/Scripts/python.exe -m uvicorn app.main:app --reload
 # Or use the helper script:
-python scripts/run_server.py
+venv/Scripts/python.exe scripts/run_server.py
 
 # Database setup
-python scripts/setup_test_db.py  # Create test database
-alembic upgrade head             # Run migrations
+venv/Scripts/python.exe scripts/setup_test_db.py  # Create test database
+venv/Scripts/python.exe -m alembic upgrade head   # Run migrations
 
 # Testing
-pytest tests/                    # Run all tests
-pytest tests/test_api.py -k test_health  # Run specific test
+venv/Scripts/python.exe -m pytest tests/ -v       # Run all tests
+venv/Scripts/python.exe -m pytest tests/test_api.py -k test_health  # Specific test
 
-# New test scripts for Phase 4
-python scripts/test_all.py       # Run comprehensive integration tests
-python scripts/create_test_user.py  # Create test user for testing
-python scripts/test_chat_simple.py  # Test chat endpoint directly
+# Quick test scripts
+venv/Scripts/python.exe scripts/test_all.py       # Comprehensive integration tests
+venv/Scripts/python.exe scripts/create_test_user.py  # Create test user
+venv/Scripts/python.exe scripts/test_chat_simple.py  # Test chat endpoint
+venv/Scripts/python.exe scripts/test_conversation_endpoints.py  # Test conversations
+```
+
+### Quick Testing Workflow
+```bash
+# Terminal 1: Start the server
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+venv/Scripts/python.exe scripts/run_server.py
+
+# Terminal 2: Run tests
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+venv/Scripts/python.exe scripts/test_all.py  # Quick integration tests
 ```
 
 ### Frontend Commands
@@ -195,15 +291,15 @@ Required environment variables (see `.env.example`):
 ### Progress Tracking
 Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 - Phase 1-3: ✅ Completed (Setup, Database, Memory System)
-- Phase 4: ✅ Mostly Completed (OpenAI Integration & API Endpoints)
+- Phase 4: ✅ Completed (OpenAI Integration & API Endpoints)
   - `/chat/completions` endpoint fully implemented and tested
   - All 5 integration tests passing
   - Memory context injection working
-  - Conversation management working
-  - Remaining: Additional conversation management endpoints
+  - Conversation management endpoints all implemented
+  - Full-text search working with PostgreSQL
 - Phase 5-8: Frontend Integration, Migration, Testing, Deployment (pending)
 
-### Recent Achievements (Phase 4)
+### Recent Achievements (Phase 4) - Completed 2025-05-19
 - Successfully implemented the `/chat/completions` endpoint with full memory context integration
 - Fixed database schema issues (added `role` column to messages via Alembic migration)
 - Updated all models and repositories to match proper field names
@@ -214,3 +310,55 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
   - Memory query test ✅
   - Error handling tests ✅
 - Created helper scripts for easier development and testing
+- **Completed all conversation management endpoints**: 
+  - POST `/conversations/` - Create new conversation
+  - GET `/conversations/{user_id}/search` - Full-text search with PostgreSQL
+  - DELETE `/conversations/{conversation_id}` - Delete with authorization
+  - Fixed all existing endpoints for proper functioning
+- **Added database migration** for tsvector trigger to support full-text search
+- **All Phase 4 tests passing** - 11/11 conversation endpoint tests successful
+
+### Troubleshooting Common Issues
+
+1. **"python: command not found" in WSL**:
+   - Always use `venv/Scripts/python.exe` (Windows Python)
+   - Never use just `python` or `python3` in WSL
+
+2. **Import errors with test files**:
+   - Delete `__pycache__` directories if tests have same names as scripts
+   - Use unique names for test files vs script files
+
+3. **Database connection issues**:
+   - Ensure PostgreSQL is running
+   - Check `.env` file has correct `POSTGRES_URL`
+   - Run migrations: `venv/Scripts/python.exe -m alembic upgrade head`
+
+4. **Session/transaction issues in tests**:
+   - Use dependency injection to override database sessions
+   - Get object IDs before making requests: `user_id = test_user.id`
+   - Don't rely on lazy loading in tests
+
+5. **Full-text search not working**:
+   - Ensure tsvector trigger migration has been run
+   - Check that `content_tsv` column exists in messages table
+   - Use `plainto_tsquery()` for searches, not plain LIKE
+
+### Quick Reference - Key Patterns
+
+```python
+# Correct user creation
+user_data = {
+    "username": "testuser",    # NOT "name"
+    "email": "test@example.com",
+    "hashed_password": "dummy"  # Required field
+}
+
+# Error handling in API
+try:
+    # code
+except HTTPException as e:
+    return {"error": e.detail}  # NOT {"detail": e.detail}
+
+# Test fixture session override
+app.dependency_overrides[get_db] = override_get_db
+```

@@ -26,6 +26,20 @@
 - [x] Updated main.py to include the new chat router
 - [x] Verified end-to-end functionality with real OpenAI API calls
 
+### Conversation Management Endpoints (Phase 4 Final Section - Completed 1/19/25)
+- [x] Created `POST /conversations/` endpoint to explicitly start new conversations
+- [x] Implemented `GET /conversations/{user_id}/search` for full-text search across conversations
+  - Uses PostgreSQL TSVECTOR columns for efficient search
+  - Returns messages with relevance ranking
+- [x] Added `DELETE /conversations/{conversation_id}` with user authorization
+  - Verifies user ownership before deletion
+  - Cascades to delete all associated messages
+- [x] Created comprehensive test infrastructure:
+  - `/scripts/test_conversation_endpoints.py` - Integration test script
+  - `/tests/test_conversation_endpoints.py` - Unit tests with pytest
+  - Both include edge case and error handling tests
+- [x] All conversation management endpoints tested and functional
+
 ### OpenAI Service Implementation (Phase 4)
 - [x] Created `OpenAIService` class in `app/services/openai_service.py`
   - Implemented API authentication and request handling
@@ -96,7 +110,7 @@
   - Added comprehensive test coverage in `tests/test_conversation_service_basic.py` and `tests/test_conversation_api_basic.py`
   - Integrated with memory context service for improved context assembly
 
-## Phase 3: Memory System Implementation - In Progress
+## Phase 3: Memory System Implementation - Completed ✅
 
 ### Tier 3: Topic Memory
 - [x] Ported and enhanced topic extraction logic
