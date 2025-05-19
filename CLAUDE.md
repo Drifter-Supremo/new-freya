@@ -190,10 +190,30 @@ venv/Scripts/python.exe scripts/test_conversation_endpoints.py  # Test conversat
 # Terminal 1: Start the server
 cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
 venv/Scripts/python.exe scripts/run_server.py
+# For Windows Command Prompt:
+# "C:\Users\drift\Documents\Cline Projects\new-freya-who-this\venv\Scripts\uvicorn.exe" app.main:app --reload
 
 # Terminal 2: Run tests
 cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
 venv/Scripts/python.exe scripts/test_all.py  # Quick integration tests
+```
+
+### Testing Server-Sent Events (SSE)
+```bash
+# Terminal 1: Start the server
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+venv/Scripts/python.exe scripts/run_server.py
+# For Windows Command Prompt:
+# "C:\Users\drift\Documents\Cline Projects\new-freya-who-this\venv\Scripts\uvicorn.exe" app.main:app --reload
+
+# Terminal 2: Create test user (if not already created)
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+venv/Scripts/python.exe scripts/create_test_user_direct.py
+
+# Terminal 3: Test SSE endpoint
+cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+venv/Scripts/python.exe scripts/test_sse_endpoint.py  # Basic SSE test
+venv/Scripts/python.exe scripts/test_sse_raw.py  # Detailed event inspection
 ```
 
 ### Frontend Commands
@@ -297,9 +317,24 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
   - Memory context injection working
   - Conversation management endpoints all implemented
   - Full-text search working with PostgreSQL
-- Phase 5-8: Frontend Integration, Migration, Testing, Deployment (pending)
+- Phase 5: Frontend Integration & Event System (In Progress)
+  - ✅ Server-Sent Events (SSE) endpoint implemented and tested
+  - ✅ EventService for event formatting and connection handling created
+  - Real-time streamed responses from OpenAI working successfully
+  - Comprehensive test scripts available
+- Phase 6-8: Data Migration, Testing, Deployment (pending)
 
-### Recent Achievements (Phase 4) - Completed 2025-05-19
+### Recent Achievements 
+
+#### Phase 5 (Frontend Integration) - In Progress [2025-05-19]
+- Successfully implemented Server-Sent Events (SSE) endpoints for real-time communication
+- Created `/events/stream` for establishing SSE connections and `/events/chat` for streaming responses
+- Implemented EventService for proper event formatting and delivery
+- Created multiple test scripts to verify functionality
+- Demonstrated successful end-to-end testing with real OpenAI API calls and streamed responses
+- Fixed virtual environment issues and provided reliable startup commands for Windows
+
+#### Phase 4 (OpenAI Integration) - Completed [2025-05-19]
 - Successfully implemented the `/chat/completions` endpoint with full memory context integration
 - Fixed database schema issues (added `role` column to messages via Alembic migration)
 - Updated all models and repositories to match proper field names

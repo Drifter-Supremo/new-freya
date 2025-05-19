@@ -8,4 +8,5 @@ black
 isort
 flake8
 openai>=1.17.0
+sse-starlette
 

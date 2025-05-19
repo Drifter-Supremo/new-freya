@@ -4,6 +4,28 @@
 
 ## Recent Updates
 
+### Frontend Integration with SSE (Phase 5) - [Started 2025-05-19]
+- [x] Created Server-Sent Events (SSE) endpoint in `app/api/routes/events.py`
+  - Implemented `/events/stream` endpoint for establishing SSE connections
+  - Added `/events/chat` endpoint for sending messages and receiving streamed responses
+  - Implemented the three required event types: `freya:listening`, `freya:thinking`, `freya:reply`
+  - Created comprehensive event formatting and generation system
+  - Added proper error handling and client connection monitoring
+- [x] Created `EventService` in `app/services/event_service.py`
+  - Implemented methods for formatting SSE events
+  - Added helper functions for creating each event type
+  - Implemented connection handling with client disconnection detection
+  - Added heartbeat mechanism to keep connections alive
+- [x] Created test scripts for thorough SSE endpoint testing
+  - `scripts/test_sse_endpoint.py` - Basic SSE endpoint testing
+  - `scripts/test_sse_raw.py` - Detailed event inspection with raw event handling
+  - `scripts/test_sse_improved.py` - Advanced testing using the sseclient library
+  - All scripts demonstrate the complete event flow
+  - Verified that events are properly emitted and formatted
+  - Confirmed successful end-to-end testing with real OpenAI API calls
+- [x] Updated `main.py` to include the events router
+- [x] Added `sse-starlette` dependency to `requirements.txt`
+
 ### Chat Completions Endpoint Implementation (Phase 4)
 - [x] Created `/chat/completions` endpoint in `app/api/routes/chat.py`
   - Implemented request validation using Pydantic models (updated to V2 validators)
@@ -130,23 +152,26 @@
   - Handles duplicate topic prevention and case-insensitive topic matching
   - Efficiently manages database transactions for topic operations
 
-## Phase 2: Database Schema & Models — Complete
+## Phase 4: OpenAI Integration & API Endpoints — Complete ✅
 
-- **ERD (Entity Relationship Diagram) created** and saved to `memory-bank/erd.md`
-- **Table relationships and constraints fully defined** in `memory-bank/relationships.md`
-- **Database query optimization strategies documented** in `memory-bank/db_optimization.md`
-- **All core models implemented and tested:**
-    - User
-    - Conversation
-    - Message
-    - UserFact
-    - Topic
-    - MessageTopic (join table)
-- **Bidirectional relationships and many-to-many associations tested and working**
-- **Unit tests for each model** confirm correct schema and ORM integrity
-- **Alembic set up for migrations**
-- **Initial migration script created and applied to PostgreSQL**
-- **Schema versioning in place (alembic_version table)**
+- **Chat completions endpoint completed** with memory context injection
+- **OpenAI service implemented** with retry logic and streaming support
+- **Conversation management endpoints completed** with full-text search
+- **All tests passing** for the chat and conversation endpoints
+
+## Phase 5: Frontend Integration & Event System — In Progress
+
+- [x] **Server-Sent Events (SSE) endpoint successfully implemented and tested** in `app/api/routes/events.py`
+  - Created `/events/stream` endpoint for establishing SSE connections
+  - Added `/events/chat` endpoint for sending messages and receiving streamed responses
+  - Implemented all required event types: `freya:listening`, `freya:thinking`, `freya:reply`
+  - Created event formatting service in `app/services/event_service.py`
+  - Added comprehensive test scripts in `scripts/test_sse_endpoint.py`, `scripts/test_sse_raw.py`, and `scripts/test_sse_improved.py`
+  - Confirmed real-time streaming responses from OpenAI working successfully
+- [ ] Create custom event dispatching service
+- [ ] Implement frontend compatibility layer
+- [ ] Test frontend communication
+- [ ] Add WebSocket support (optional)
 
 ## What's Left to Build
 
@@ -191,17 +216,22 @@
 - [x] Port regex patterns from legacy code (patterns ported and tested via `utils/fact_patterns.py` and `tests/test_fact_patterns.py`)
 - [x] Implement and test user fact storage logic (facts extracted from messages and persisted to DB; duplicate handling verified)
 - [x] Implement conversation history service (created in `conversation_history_service.py` with API endpoints)
-- API endpoints for chat and topic search
-- Firestore to PostgreSQL migration tooling
-- Structured logging and error handling
-- CI/CD pipeline setup for backend
-- Railway deployment configuration
+- [x] API endpoints for chat and topic search
+- [x] Server-Sent Events (SSE) endpoint for real-time communication
+- [ ] Implement frontend compatibility layer with window.sendMessageToAPI equivalent
+- [ ] Add support for emitting browser events (freya:listening, freya:thinking, freya:reply)
+- [ ] Firestore to PostgreSQL migration tooling
+- [ ] Structured logging and error handling
+- [ ] CI/CD pipeline setup for backend
+- [ ] Railway deployment configuration
 
 ## Current Status
 
-- Backend rebuild is in the implementation phase, with database schema, models, and memory system (Tier 1 and Tier 2) complete.
-- User Facts (Tier 1) and Recent History (Tier 2) memory systems are fully implemented and tested.
+- Backend rebuild is in the implementation phase, with database schema, models, memory system (Tier 1, 2, and 3), and OpenAI integration complete.
+- User Facts (Tier 1), Recent History (Tier 2), and Topic Memory (Tier 3) systems are fully implemented and tested.
 - Memory context assembly service is working and integrated with conversation history.
+- Chat completions endpoint is fully implemented and tested.
+- Server-Sent Events (SSE) endpoint is implemented for frontend integration.
 - Node.js backend is deprecated and not in use.
 
 ## Security Improvements

@@ -4,7 +4,8 @@ openai_service.py - Service for handling OpenAI API interactions
 import os
 import logging
 import time
-from typing import Dict, List, Optional, Union, Any, Generator
+import asyncio
+from typing import Dict, List, Optional, Union, Any, Generator, AsyncGenerator
 
 from openai import OpenAI, APIError, RateLimitError, APIConnectionError, InternalServerError
 from openai.types.chat import ChatCompletion, ChatCompletionMessage, ChatCompletionChunk
@@ -101,39 +102,35 @@ class OpenAIService:
                 self.logger.error(f"Unexpected error in OpenAI API call: {str(e)}")
                 raise
 
-    def handle_streaming_response(self, streaming_response) -> Generator[str, None, str]:
+    async def handle_streaming_response(self, streaming_response) -> AsyncGenerator[str, None]:
         """
-        Process a streaming response from the OpenAI API.
+        Process a streaming response from the OpenAI API asynchronously.
         
         Args:
             streaming_response: The streaming response from OpenAI
             
         Returns:
-            Generator yielding content chunks as they arrive
-            Final return value is the complete combined response
+            AsyncGenerator yielding content chunks as they arrive
         """
-        full_response = ""
-        
         try:
             for chunk in streaming_response:
                 if chunk.choices and chunk.choices[0].delta.content:
                     content = chunk.choices[0].delta.content
-                    full_response += content
+                    # Small delay to avoid blocking the event loop
+                    await asyncio.sleep(0)
                     yield content
         except Exception as e:
             self.logger.error(f"Error processing streaming response: {str(e)}")
             raise
-        
-        return full_response
 
-    def create_freya_chat_completion(
+    async def create_freya_chat_completion(
         self,
         user_message: str,
         conversation_history: List[ChatCompletionMessageParam] = None,
         memory_context: Optional[str] = None,
         system_prompt: Optional[str] = FREYA_SYSTEM_PROMPT,
         stream: bool = False,
-    ) -> Union[ChatCompletion, Generator[str, None, str]]:
+    ) -> Union[ChatCompletion, AsyncGenerator[str, None]]:
         """
         Create a chat completion specifically for Freya, with her system prompt.
         
