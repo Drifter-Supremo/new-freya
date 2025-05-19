@@ -44,6 +44,23 @@ cd new-freya
 ### 5. Run the backend
 ```sh
 uvicorn app.main:app --reload
+# Or use the helper script:
+python scripts/run_server.py
+```
+
+### 6. Testing
+```sh
+# Run comprehensive test suite (starts server and runs all tests)
+python scripts/test_all.py
+
+# Run specific pytest unit tests
+python -m pytest tests/test_chat_simple.py -v
+
+# Create a test user
+python scripts/create_test_user.py
+
+# Test the chat endpoint directly
+python scripts/test_chat_simple.py
 ```
 
 ## Documentation

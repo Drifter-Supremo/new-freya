@@ -18,7 +18,7 @@ class BaseRepository(Generic[ModelType]):
     def create(self, obj_in: dict) -> ModelType:
         obj = self.model(**obj_in)
         self.db.add(obj)
-        self.db.flush()  # Assign PKs but do not commit
+        self.db.commit()  # Commit the transaction
         self.db.refresh(obj)
         return obj
 

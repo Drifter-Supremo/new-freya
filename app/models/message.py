@@ -9,6 +9,7 @@ class Message(Base):
     id = Column(Integer, primary_key=True, index=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    role = Column(String(20), nullable=False)  # user/assistant/system
     content = Column(String, nullable=False)
     content_tsv = Column(TSVECTOR)  # For full-text search
     timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)

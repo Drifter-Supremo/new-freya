@@ -124,16 +124,16 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Configure fine-tuned model parameters
   - [x] Add retry logic and error handling
   - [x] Implement API key management
-- [ ] **Create chat completion endpoint**
-  - [ ] Implement /chat/completions endpoint
-  - [ ] Add request validation
-  - [ ] Configure response streaming
-  - [ ] Implement conversation context management
-- [ ] **Implement system prompt handling**
-  - [ ] Port system prompt from legacy code
-  - [ ] Create dynamic system prompt assembly
-  - [ ] Add memory context injection
-  - [ ] Implement conversation state tracking
+- [x] **Create chat completion endpoint**
+  - [x] Implement /chat/completions endpoint
+  - [x] Add request validation
+  - [x] Configure response streaming support
+  - [x] Implement conversation context management
+- [x] **Implement system prompt handling**
+  - [x] Port system prompt from legacy code (in `openai_constants.py`)
+  - [x] Create dynamic system prompt assembly
+  - [x] Add memory context injection
+  - [x] Implement conversation state tracking
 - [ ] **Add conversation management endpoints**
   - [ ] Create endpoint to start new conversation
   - [ ] Add endpoint to retrieve conversation history

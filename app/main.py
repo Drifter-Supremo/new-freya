@@ -29,6 +29,7 @@ from app.api.routes.conversation import router as conversation_router
 from app.api.routes.user_fact import router as user_fact_router
 from app.api.routes.topic import router as topic_router
 from app.api.routes.memory import router as memory_router
+from app.api.routes.chat import router as chat_router
 
 # Create FastAPI app
 app = FastAPI()
@@ -52,6 +53,7 @@ app.include_router(conversation_router)
 app.include_router(user_fact_router)
 app.include_router(topic_router)
 app.include_router(memory_router)
+app.include_router(chat_router)
 
 # Run the app locally
 if __name__ == "__main__":

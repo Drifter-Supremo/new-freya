@@ -51,6 +51,30 @@
 
 ## Component Relationships
 
+### Chat Completion Flow
+
+#### Chat Endpoint
+- **Location**: `app/api/routes/chat.py`
+- **Responsibility**: Handles chat completion requests
+- **Key Patterns**:
+  - Uses integer IDs for users and conversations (not UUIDs)
+  - Validates requests using Pydantic V2 field validators
+  - Integrates memory context before calling OpenAI
+  - Manages conversation lifecycle (create/continue)
+  - Stores both user and assistant messages
+
+#### Integration Points
+1. **Request Flow**:
+   - Client → FastAPI → Chat Endpoint → Services → Database
+   - Memory Context Builder assembles context
+   - OpenAI Service makes API call
+   - Response formatted and returned
+
+2. **Error Handling**:
+   - Custom error handler for JSON serialization
+   - Proper HTTP status codes (404, 422, 500)
+   - Detailed error messages for debugging
+
 ### OpenAI Integration Components
 
 #### OpenAIService
@@ -112,3 +136,24 @@
 - **Infrastructure**:
   - Centralized logging and error handling
   - Configuration management via environment variables
+
+## Testing Patterns
+
+### Integration Testing
+- **Script**: `scripts/test_all.py`
+- **Approach**: 
+  - Starts server in background process
+  - Runs comprehensive test suite
+  - Tests actual API calls and database interactions
+  - Validates end-to-end functionality
+
+### Test Helpers
+- **User Creation**: `scripts/create_test_user.py` - Creates test users with unique IDs
+- **Server Runner**: `scripts/run_server.py` - Quick server startup script
+- **Simple Tests**: `scripts/test_chat_simple.py` - Direct endpoint testing
+
+### Test Coverage
+- Unit tests: Basic functionality testing
+- Integration tests: End-to-end flow validation
+- Helper scripts: Manual testing and debugging
+- All tests must run against PostgreSQL (not SQLite)

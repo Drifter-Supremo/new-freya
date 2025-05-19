@@ -33,3 +33,34 @@ CREATE INDEX idx_message_topic ON MessageTopic(message_id, topic_id);
 ---
 
 These optimizations will help your Freya backend remain fast, reliable, and scalable as your user base and message volume grow. Review and adjust indexes as your query patterns evolve.
+
+## Migration Patterns
+
+### Adding Non-Nullable Columns
+When adding non-nullable columns to existing tables with data:
+1. Add column as nullable first
+2. Update existing rows with default values
+3. Alter column to NOT NULL
+
+Example:
+```python
+def upgrade():
+    # First add the column as nullable
+    op.add_column('messages', sa.Column('role', sa.String(20), nullable=True))
+    # Update existing rows with a default role
+    op.execute("UPDATE messages SET role = 'user' WHERE role IS NULL")
+    # Now make the column NOT NULL
+    op.alter_column('messages', 'role', nullable=False)
+```
+
+### Alembic Usage
+```bash
+# Create new migration
+alembic revision --autogenerate -m "Description"
+
+# Apply migrations
+alembic upgrade head
+
+# Check current revision
+alembic current
+```

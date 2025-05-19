@@ -26,8 +26,18 @@ def add_error_handlers(app):
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
-        logger.error(f"Validation error: {exc.errors()}")
+        errors = []
+        for error in exc.errors():
+            # Convert error dict to make it JSON serializable
+            err_dict = {
+                "loc": error.get("loc"),
+                "msg": error.get("msg"),
+                "type": error.get("type")
+            }
+            errors.append(err_dict)
+        
+        logger.error(f"Validation error: {errors}")
         return JSONResponse(
             status_code=422,
-            content={"error": "Validation error", "details": exc.errors()},
+            content={"error": "Validation error", "details": errors},
         )

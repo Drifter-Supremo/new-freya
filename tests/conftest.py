@@ -1,8 +1,12 @@
 import os
 import sys
 import pytest
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, Session
+
+# Load environment variables
+load_dotenv()
 
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
