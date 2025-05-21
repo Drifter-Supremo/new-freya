@@ -299,7 +299,7 @@ The project uses Firebase/Firestore as the primary backend:
 - **Firebase Memory Service**: `app/services/firebase_memory_service.py` - Memory retrieval from Firestore
 - **Firebase Chat API**: `app/api/routes/firebase_chat.py` - Simplified chat endpoint
 - **Configuration**: `app/core/firebase_config.py` - Firebase project settings
-- **Service Account**: Uses `freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json` for authentication
+- **Service Account**: Uses `freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json` for authentication (not included in repository for security)
 
 **Firebase Testing**:
 ```bash

@@ -36,7 +36,8 @@ cd new-freya
   ```
 
 ### 3. Set up Firebase/Firestore
-- Ensure Firebase service account credentials are in place (`freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json`)
+- Download Firebase service account credentials from Firebase Console (see `FIREBASE_SETUP.md`)
+- Place credentials file as `freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json` in project root
 - Firestore collections should include: `userFacts`, `conversations`, `messages`
 
 ### 4. Environment Variables  
