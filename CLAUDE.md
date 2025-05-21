@@ -2,66 +2,66 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-\### Critical Rules - DO NOT VIOLATE
+### Critical Rules - DO NOT VIOLATE
 
-\- \*\*ALWAYS start every new task with reading the CLAUDE.md
+- **ALWAYS start every new task with reading the CLAUDE.md
 
-\- \*\*NEVER create mock data or simplified components\*\* unless explicitly told to do so
+- **NEVER create mock data or simplified components** unless explicitly told to do so
 
-\- \*\*NEVER replace existing complex components with simplified versions\*\* - always fix the actual problem
+- **NEVER replace existing complex components with simplified versions** - always fix the actual problem
 
-\- \*\*ALWAYS work with the existing codebase\*\* - do not create new simplified alternatives
+- **ALWAYS work with the existing codebase** - do not create new simplified alternatives
 
-\- \*\*ALWAYS find and fix the root cause\*\* of issues instead of creating workarounds
+- **ALWAYS find and fix the root cause** of issues instead of creating workarounds
 
-\- When debugging issues, focus on fixing the existing implementation, not replacing it
+- When debugging issues, focus on fixing the existing implementation, not replacing it
 
-\- When something doesn't work, debug and fix it - don't start over with a simple version
+- When something doesn't work, debug and fix it - don't start over with a simple version
 
-\- \*\*ALWAYS check ALL /memory-bank DOCS before making changes\*\* 
+- **ALWAYS check ALL /memory-bank DOCS before making changes** 
 
-\- NEVER complete multiple tasks in a row unless told to do so ALWAYS complete 1 task at a time then stop to regroup with me.
+- NEVER complete multiple tasks in a row unless told to do so ALWAYS complete 1 task at a time then stop to regroup with me.
 
-\- ALWAYS update ALL relevant/memory-bank docs after every successful task
+- ALWAYS update ALL relevant/memory-bank docs after every successful task
 
-\### Development Environment - IMPORTANT
+### Development Environment - IMPORTANT
 
-\- **Operating System**: Windows with WSL (Windows Subsystem for Linux)
-\- **Python**: Using Windows Python from WSL (venv/Scripts/python.exe)
-\- **Virtual Environment**: Located at `venv/` in project root
-\- **Database**: PostgreSQL (must be running for all operations)
+- **Operating System**: macOS
+- **Python**: Using native macOS Python (venv/bin/python)
+- **Virtual Environment**: Located at `venv/` in project root
+- **Database**: PostgreSQL (must be running for all operations)
 
-\### Quick Start Guide for Testing
+### Quick Start Guide for Testing
 
-1. **Activate Virtual Environment (Windows from WSL)**:
+1. **Activate Virtual Environment (macOS)**:
    ```bash
-   cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-   # Use Windows Python executable from WSL:
-   venv/Scripts/python.exe
+   cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+   # Use macOS Python with virtual environment:
+   source venv/bin/activate
    ```
 
 2. **Start the FastAPI Server**:
    ```bash
    # Option 1: Using the helper script
-   venv/Scripts/python.exe scripts/run_server.py
+   python scripts/run_server.py
    
    # Option 2: Direct uvicorn
-   venv/Scripts/python.exe -m uvicorn app.main:app --reload
+   python -m uvicorn app.main:app --reload
    ```
 
 3. **Run Tests**:
    ```bash
    # Run all tests
-   venv/Scripts/python.exe -m pytest tests/ -v
+   python -m pytest tests/ -v
    
    # Run specific test file
-   venv/Scripts/python.exe -m pytest tests/test_conversation_endpoints.py -v
+   python -m pytest tests/test_conversation_endpoints.py -v
    
    # Run comprehensive integration tests
-   venv/Scripts/python.exe scripts/test_all.py
+   python scripts/test_all.py
    ```
 
-\### Common Import Fixes
+### Common Import Fixes
 
 When imports fail, check these common issues:
 1. `init_db` is in `app.core.init_db`, not `app.core.db`
@@ -69,7 +69,7 @@ When imports fail, check these common issues:
 3. User model requires `hashed_password` field
 4. All IDs are integers, not UUIDs
 
-\### Test Data Patterns
+### Test Data Patterns
 
 1. **Creating Test Users**:
    ```python
@@ -90,38 +90,38 @@ When imports fail, check these common issues:
    - Always get IDs before using them: `user_id = test_user.id`
    - Use dependency injection for database sessions in tests
 
-\### Database Migrations
+### Database Migrations
 
 When adding new columns or database features:
 ```bash
 # Create new migration
-venv/Scripts/python.exe -m alembic revision -m "description"
+python -m alembic revision -m "description"
 
 # Run migrations
-venv/Scripts/python.exe -m alembic upgrade head
+python -m alembic upgrade head
 ```
 
-\### PostgreSQL Full-Text Search
+### PostgreSQL Full-Text Search
 
 - Messages table has `content_tsv` column for FTS
 - Trigger automatically populates tsvector on insert/update
 - Search queries use `plainto_tsquery()` for text matching
 
-\### TypeScript and Linting
+### TypeScript and Linting
 
-\- ALWAYS add explicit types to all function parameters, variables, and return types
+- ALWAYS add explicit types to all function parameters, variables, and return types
 
-\- ALWAYS run npm build\ or whichever appropriate linter command before considering any code changes complete
+- ALWAYS run npm build or whichever appropriate linter command before considering any code changes complete
 
-\- Fix all linter and TypeScript errors immediately - don't leave them for the user to fix
+- Fix all linter and TypeScript errors immediately - don't leave them for the user to fix
 
-\- When making changes to multiple files, check each one for type errors
+- When making changes to multiple files, check each one for type errors
 
 
 
-\### Web Access and MCP Tools
+### Web Access and MCP Tools
 
-\- Use the built-in WebFetch tool to access web content using the following syntax:
+- Use the built-in WebFetch tool to access web content using the following syntax:
   ```
   WebFetch({
     url: "https://example.com/path",
@@ -129,15 +129,15 @@ venv/Scripts/python.exe -m alembic upgrade head
   })
   ```
 
-\- The WebFetch tool can be used to:
+- The WebFetch tool can be used to:
   - Retrieve documentation
   - Research APIs and libraries
   - Access technical resources
   - View content from URLs the user provides
 
-\- If the user references specific URLs, always use WebFetch to retrieve and process the content
+- If the user references specific URLs, always use WebFetch to retrieve and process the content
 
-\- Context7 MCP is available for vector storage and retrieval augmented generation:
+- Context7 MCP is available for vector storage and retrieval augmented generation:
   - This provides advanced RAG capabilities for knowledge management
   - Can be used for semantic search across documentation
   - Enables more context-aware responses based on stored information
@@ -154,66 +154,67 @@ Freya AI Companion is a fine-tuned GPT-4.1 Mini AI chatbot with a unique emotion
 
 ## Common Development Commands
 
-### Backend Commands (Windows with WSL)
+### Backend Commands (macOS)
 ```bash
-# Path to project (ALWAYS USE QUOTES for paths with spaces)
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
+# Path to project
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
 
-# Python executable (ALWAYS use this path)
-venv/Scripts/python.exe
+# Activate virtual environment
+source venv/bin/activate
 
 # Install dependencies
-venv/Scripts/python.exe -m pip install -r requirements.txt
+pip install -r requirements.txt
 
 # Run the backend
-venv/Scripts/python.exe -m uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 # Or use the helper script:
-venv/Scripts/python.exe scripts/run_server.py
+python scripts/run_server.py
 
 # Database setup
-venv/Scripts/python.exe scripts/setup_test_db.py  # Create test database
-venv/Scripts/python.exe -m alembic upgrade head   # Run migrations
+python scripts/setup_test_db.py  # Create test database
+python -m alembic upgrade head   # Run migrations
 
 # Testing
-venv/Scripts/python.exe -m pytest tests/ -v       # Run all tests
-venv/Scripts/python.exe -m pytest tests/test_api.py -k test_health  # Specific test
+python -m pytest tests/ -v       # Run all tests
+python -m pytest tests/test_api.py -k test_health  # Specific test
 
 # Quick test scripts
-venv/Scripts/python.exe scripts/test_all.py       # Comprehensive integration tests
-venv/Scripts/python.exe scripts/create_test_user.py  # Create test user
-venv/Scripts/python.exe scripts/test_chat_simple.py  # Test chat endpoint
-venv/Scripts/python.exe scripts/test_conversation_endpoints.py  # Test conversations
+python scripts/test_all.py       # Comprehensive integration tests
+python scripts/create_test_user.py  # Create test user
+python scripts/test_chat_simple.py  # Test chat endpoint
+python scripts/test_conversation_endpoints.py  # Test conversations
 ```
 
 ### Quick Testing Workflow
 ```bash
 # Terminal 1: Start the server
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-venv/Scripts/python.exe scripts/run_server.py
-# For Windows Command Prompt:
-# "C:\Users\drift\Documents\Cline Projects\new-freya-who-this\venv\Scripts\uvicorn.exe" app.main:app --reload
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+source venv/bin/activate
+python scripts/run_server.py
 
 # Terminal 2: Run tests
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-venv/Scripts/python.exe scripts/test_all.py  # Quick integration tests
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+source venv/bin/activate
+python scripts/test_all.py  # Quick integration tests
 ```
 
 ### Testing Server-Sent Events (SSE)
 ```bash
 # Terminal 1: Start the server
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-venv/Scripts/python.exe scripts/run_server.py
-# For Windows Command Prompt:
-# "C:\Users\drift\Documents\Cline Projects\new-freya-who-this\venv\Scripts\uvicorn.exe" app.main:app --reload
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+source venv/bin/activate
+python scripts/run_server.py
 
 # Terminal 2: Create test user (if not already created)
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-venv/Scripts/python.exe scripts/create_test_user_direct.py
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+source venv/bin/activate
+python scripts/create_test_user_direct.py
 
 # Terminal 3: Test SSE endpoint
-cd "/mnt/c/Users/drift/Documents/Cline Projects/new-freya-who-this"
-venv/Scripts/python.exe scripts/test_sse_endpoint.py  # Basic SSE test
-venv/Scripts/python.exe scripts/test_sse_raw.py  # Detailed event inspection
+cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
+source venv/bin/activate
+python scripts/test_sse_endpoint.py  # Basic SSE test
+python scripts/test_sse_raw.py  # Detailed event inspection
 ```
 
 ### Frontend Commands
@@ -332,7 +333,7 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 - Implemented EventService for proper event formatting and delivery
 - Created multiple test scripts to verify functionality
 - Demonstrated successful end-to-end testing with real OpenAI API calls and streamed responses
-- Fixed virtual environment issues and provided reliable startup commands for Windows
+- Fixed virtual environment issues and provided reliable startup commands for macOS
 
 #### Phase 4 (OpenAI Integration) - Completed [2025-05-19]
 - Successfully implemented the `/chat/completions` endpoint with full memory context integration
@@ -355,9 +356,9 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 
 ### Troubleshooting Common Issues
 
-1. **"python: command not found" in WSL**:
-   - Always use `venv/Scripts/python.exe` (Windows Python)
-   - Never use just `python` or `python3` in WSL
+1. **Virtual environment activation issues**:
+   - Use `source venv/bin/activate` on macOS
+   - Ensure Python 3.11+ is installed on your system
 
 2. **Import errors with test files**:
    - Delete `__pycache__` directories if tests have same names as scripts
@@ -366,7 +367,7 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 3. **Database connection issues**:
    - Ensure PostgreSQL is running
    - Check `.env` file has correct `POSTGRES_URL`
-   - Run migrations: `venv/Scripts/python.exe -m alembic upgrade head`
+   - Run migrations: `python -m alembic upgrade head`
 
 4. **Session/transaction issues in tests**:
    - Use dependency injection to override database sessions
