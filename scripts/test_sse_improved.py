@@ -85,7 +85,7 @@ def main():
     except Exception as e:
         logger.error(f"Error: Server is not running: {str(e)}")
         logger.error("Please start the server first with the command:")
-        logger.error("venv\\Scripts\\uvicorn.exe app.main:app --reload")
+        logger.error("source venv/bin/activate && uvicorn app.main:app --reload")
         sys.exit(1)
     
     logger.info(f"Using test user ID: {TEST_USER_ID}")
