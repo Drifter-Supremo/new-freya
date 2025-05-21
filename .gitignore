@@ -1,3 +1,12 @@
 # Ignore environment files containing secrets
 .env
 .env.*
+
+# Ignore Firebase service account credentials
+*firebase*adminsdk*.json
+freya-ai-chat-firebase-adminsdk-*.json
+
+# Ignore other credential files
+*.pem
+*.key
+credentials.json
