@@ -7,14 +7,6 @@ main.py - FastAPI entry point for Freya backend
 - Designed to be run with Uvicorn for local development
 """
 
-"""
-main.py - FastAPI entry point for Freya backend (modular version)
-
-- Loads config, logging, and error handlers from core modules
-- Registers API routers from api/routes
-- Designed to be run with Uvicorn for local development
-"""
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,6 +23,7 @@ from app.api.routes.topic import router as topic_router
 from app.api.routes.memory import router as memory_router
 from app.api.routes.chat import router as chat_router
 from app.api.routes.events import router as events_router
+from app.api.routes.firebase_chat import router as firebase_chat_router
 
 # Create FastAPI app
 app = FastAPI()
@@ -56,6 +49,9 @@ app.include_router(topic_router)
 app.include_router(memory_router)
 app.include_router(chat_router)
 app.include_router(events_router)
+
+# Register Firebase routes (simplified approach)
+app.include_router(firebase_chat_router, prefix="/firebase")
 
 # Run the app locally
 if __name__ == "__main__":

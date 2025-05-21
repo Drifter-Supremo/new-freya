@@ -29,7 +29,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Operating System**: macOS
 - **Python**: Using native macOS Python (venv/bin/python)
 - **Virtual Environment**: Located at `venv/` in project root
-- **Database**: PostgreSQL (must be running for all operations)
+- **Database**: Firebase/Firestore (must have valid service account credentials)
 
 ### Quick Start Guide for Testing
 
@@ -101,11 +101,11 @@ python -m alembic revision -m "description"
 python -m alembic upgrade head
 ```
 
-### PostgreSQL Full-Text Search
+### Firebase/Firestore Search
 
-- Messages table has `content_tsv` column for FTS
-- Trigger automatically populates tsvector on insert/update
-- Search queries use `plainto_tsquery()` for text matching
+- Firestore collections: `userFacts`, `conversations`, `messages`
+- Native Firestore querying and indexing
+- Search functionality implemented in Firebase services
 
 ### TypeScript and Linting
 
@@ -147,10 +147,10 @@ python -m alembic upgrade head
 
 Freya AI Companion is a fine-tuned GPT-4.1 Mini AI chatbot with a unique emotional persona and tiered memory system. The project consists of:
 
-- **Backend**: Python 3.11+, FastAPI, PostgreSQL, SQLAlchemy/SQLModel
+- **Backend**: Python 3.11+, FastAPI, Firebase/Firestore
 - **Frontend**: React 18, Next.js 14, Tailwind CSS, shadcn/ui, Framer Motion  
 - **AI Model**: Fine-tuned GPT-4.1 Mini: "ft:gpt-4.1-mini-2025-04-14:gorlea-industries:freya:BULkCmxj"
-- **Features**: Multi-tiered memory system (user facts, recent history, topics), OpenAI integration, RESTful API
+- **Features**: Multi-tiered memory system (user facts, recent history, topics), OpenAI integration, Server-Sent Events (SSE)
 
 ## Common Development Commands
 
@@ -170,19 +170,13 @@ python -m uvicorn app.main:app --reload
 # Or use the helper script:
 python scripts/run_server.py
 
-# Database setup
-python scripts/setup_test_db.py  # Create test database
-python -m alembic upgrade head   # Run migrations
+# Firebase testing
+python scripts/test_firebase_connection.py  # Test Firebase connectivity
+python scripts/test_firebase_chat.py        # Test Firebase chat API
 
 # Testing
-python -m pytest tests/ -v       # Run all tests
-python -m pytest tests/test_api.py -k test_health  # Specific test
-
-# Quick test scripts
-python scripts/test_all.py       # Comprehensive integration tests
-python scripts/create_test_user.py  # Create test user
-python scripts/test_chat_simple.py  # Test chat endpoint
-python scripts/test_conversation_endpoints.py  # Test conversations
+python scripts/test_event_dispatcher.py     # Test SSE events
+python scripts/test_sse_endpoint.py         # Test SSE streaming
 ```
 
 ### Quick Testing Workflow
@@ -192,10 +186,11 @@ cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
 source venv/bin/activate
 python scripts/run_server.py
 
-# Terminal 2: Run tests
+# Terminal 2: Run Firebase tests
 cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
 source venv/bin/activate
-python scripts/test_all.py  # Quick integration tests
+python scripts/test_firebase_connection.py  # Basic connectivity
+python scripts/test_firebase_chat.py        # Full chat API
 ```
 
 ### Testing Server-Sent Events (SSE)
@@ -205,16 +200,12 @@ cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
 source venv/bin/activate
 python scripts/run_server.py
 
-# Terminal 2: Create test user (if not already created)
+# Terminal 2: Test SSE endpoint
 cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
 source venv/bin/activate
-python scripts/create_test_user_direct.py
-
-# Terminal 3: Test SSE endpoint
-cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
-source venv/bin/activate
-python scripts/test_sse_endpoint.py  # Basic SSE test
-python scripts/test_sse_raw.py  # Detailed event inspection
+python scripts/test_sse_endpoint.py     # Basic SSE test
+python scripts/test_event_dispatcher.py # Event dispatcher test
+python scripts/test_sse_raw.py         # Detailed event inspection
 ```
 
 ### Frontend Commands
@@ -244,7 +235,7 @@ flake8 app/                      # Lint Python code
    - Implementation: `app/core/conversation_history_service.py`
    - Repository: `app/repository/conversation.py`
 
-3. **Topic Memory (Tier 3)**: Long-term topical memories using PostgreSQL full-text search
+3. **Topic Memory (Tier 3)**: Long-term topical memories using Firestore queries
    - Topic extraction: `app/services/topic_extraction.py`
    - Tagging service: `app/services/topic_tagging.py`
    - Search implementation: `app/services/topic_search.py`
@@ -270,64 +261,100 @@ The backend communicates with the React frontend via browser events:
 - `freya:thinking`: When processing
 - `freya:reply`: When sending response
 
-### Database Schema
-Models defined in `app/models/`:
-- `user.py`: User management
-- `conversation.py`: Conversation tracking  
-- `message.py`: Message storage
-- `topic.py`: Topic and message-topic associations
-- `userfact.py`: User fact storage
+### Firebase/Firestore Schema
+Collections in Firestore:
+- `userFacts`: User fact storage with fields `timestamp`, `type`, `value`
+- `conversations`: Conversation tracking with `userId`, `createdAt`, `updatedAt`
+- `messages`: Message storage with `timestamp`, `user` (content field)
 
-Uses PostgreSQL with full-text search capabilities (TSVECTOR columns).
+Uses Firestore's native querying and indexing capabilities.
 
 ### API Structure
 Routes organized in `app/api/routes/`:
 - `/health`: Basic health check
-- `/db_health`: Database connectivity check
-- `/conversations`: Conversation management
-- `/user_facts`: User fact CRUD operations
-- `/topics`: Topic management and search
-- `/memory`: Memory context retrieval
+- `/events`: Server-Sent Events for real-time communication
+- `/firebase`: Firebase integration endpoints
+  - `/firebase/chat`: Main chat API with memory integration
+  - `/firebase/conversations/{user_id}`: Get user conversations
+  - `/firebase/facts/{user_id}`: Get user facts
+  - `/firebase/topics/{user_id}`: Get user topics
 
 ### Testing Strategy
-- Unit tests for all services and repositories
-- Integration tests for PostgreSQL-specific features
-- Mock OpenAI integration tests  
-- Test fixtures in `tests/conftest.py`
-- Development database used for testing
+- Firebase connectivity tests with real production data
+- Integration tests for Firebase/Firestore services
+- Server-Sent Events (SSE) testing for real-time communication
+- OpenAI integration tests with memory context
+- Production Firestore database used for testing
 
 ### Environment Configuration
 Required environment variables (see `.env.example`):
 - `OPENAI_API_KEY`: OpenAI API access
-- `POSTGRES_URL`: PostgreSQL connection string
 - `LOG_LEVEL`: Optional logging configuration
 
+Firebase configuration is handled via service account credentials file.
+
+### Firebase Integration (Phase 5 - Completed)
+The project uses Firebase/Firestore as the primary backend:
+- **Firebase Service**: `app/services/firebase_service.py` - Complete Firestore integration
+- **Firebase Memory Service**: `app/services/firebase_memory_service.py` - Memory retrieval from Firestore
+- **Firebase Chat API**: `app/api/routes/firebase_chat.py` - Simplified chat endpoint
+- **Configuration**: `app/core/firebase_config.py` - Firebase project settings
+- **Service Account**: Uses `freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json` for authentication
+
+**Firebase Testing**:
+```bash
+# Test Firebase connectivity and data retrieval
+python scripts/test_firebase_connection.py
+
+# Test complete Firebase chat API
+python scripts/test_firebase_chat.py
+```
+
+**Firestore Collections**:
+- `userFacts`: User facts with fields `timestamp`, `type`, `value`
+- `conversations`: Conversation metadata with `userId`, `createdAt`, `updatedAt`
+- `messages`: Message content with `timestamp`, `user` (content field)
+
 ### Key Implementation Notes
-1. **PostgreSQL-specific features**: The app uses PostgreSQL's full-text search, requiring actual PostgreSQL instances for testing (not SQLite)
-2. **Memory prioritization**: Implemented scoring algorithms for relevance-based memory retrieval
-3. **Error handling**: Centralized error handling in `app/core/errors.py`
-4. **Logging**: Configured via `app/core/config.py` 
-5. **CORS**: Development configuration allows all origins
+1. **Firebase/Firestore Backend**: The app uses Firebase/Firestore as the primary database backend
+2. **Firebase Integration**: Successfully tested with production Firestore data and user facts
+3. **Memory prioritization**: Implemented scoring algorithms for relevance-based memory retrieval from Firestore
+4. **Real-time Communication**: Server-Sent Events (SSE) for browser integration
+5. **Error handling**: Centralized error handling in `app/core/errors.py`
+6. **Logging**: Configured via `app/core/config.py` 
+7. **CORS**: Development configuration allows all origins
 
 ### Progress Tracking
 Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 - Phase 1-3: ✅ Completed (Setup, Database, Memory System)
 - Phase 4: ✅ Completed (OpenAI Integration & API Endpoints)
-  - `/chat/completions` endpoint fully implemented and tested
-  - All 5 integration tests passing
-  - Memory context injection working
-  - Conversation management endpoints all implemented
-  - Full-text search working with PostgreSQL
-- Phase 5: Frontend Integration & Event System (In Progress)
+  - OpenAI service integration with fine-tuned GPT-4.1 Mini model
+  - Memory context injection working with Firestore data
+  - Firebase chat API endpoints implemented
+  - All integration tests passing
+- Phase 5: ✅ Completed (Simplified Firebase Integration) [2025-05-21]
   - ✅ Server-Sent Events (SSE) endpoint implemented and tested
   - ✅ EventService for event formatting and connection handling created
+  - ✅ Firebase Admin SDK integration with existing Firestore database
+  - ✅ Firebase memory service working with real user data (11 user facts)
+  - ✅ Simplified Firebase chat API fully functional
+  - ✅ All integration tests passing with production Firestore data
   - Real-time streamed responses from OpenAI working successfully
-  - Comprehensive test scripts available
+  - Fine-tuned GPT-4.1 Mini responding with personalized memory context
 - Phase 6-8: Data Migration, Testing, Deployment (pending)
 
 ### Recent Achievements 
 
-#### Phase 5 (Frontend Integration) - In Progress [2025-05-19]
+#### Phase 5 (Simplified Firebase Integration) - Completed [2025-05-21]
+- Successfully implemented complete Firebase/Firestore integration with production data
+- Created Firebase services for memory retrieval and chat API functionality
+- Successfully connected to existing Firestore database and retrieved real user data
+- Implemented memory-aware chat responses using actual user facts from Firestore
+- All Firebase integration tests passing with real production data
+- Fine-tuned GPT-4.1 Mini responding with personalized context from Firestore
+- Firebase/Firestore backend architecture fully functional
+
+#### Phase 5 (SSE Frontend Integration) - Completed [2025-05-19]
 - Successfully implemented Server-Sent Events (SSE) endpoints for real-time communication
 - Created `/events/stream` for establishing SSE connections and `/events/chat` for streaming responses
 - Implemented EventService for proper event formatting and delivery
@@ -348,7 +375,7 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
 - Created helper scripts for easier development and testing
 - **Completed all conversation management endpoints**: 
   - POST `/conversations/` - Create new conversation
-  - GET `/conversations/{user_id}/search` - Full-text search with PostgreSQL
+  - Firebase chat and memory endpoints with Firestore integration
   - DELETE `/conversations/{conversation_id}` - Delete with authorization
   - Fixed all existing endpoints for proper functioning
 - **Added database migration** for tsvector trigger to support full-text search
@@ -364,20 +391,20 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
    - Delete `__pycache__` directories if tests have same names as scripts
    - Use unique names for test files vs script files
 
-3. **Database connection issues**:
-   - Ensure PostgreSQL is running
-   - Check `.env` file has correct `POSTGRES_URL`
-   - Run migrations: `python -m alembic upgrade head`
+3. **Firebase connection issues**:
+   - Ensure Firebase service account credentials file exists
+   - Verify Firestore collections are set up correctly
+   - Check Firebase project configuration
 
-4. **Session/transaction issues in tests**:
-   - Use dependency injection to override database sessions
-   - Get object IDs before making requests: `user_id = test_user.id`
-   - Don't rely on lazy loading in tests
+4. **Firebase authentication issues**:
+   - Verify service account file permissions
+   - Check Firebase project ID in configuration
+   - Ensure Firestore is enabled for your Firebase project
 
-5. **Full-text search not working**:
-   - Ensure tsvector trigger migration has been run
-   - Check that `content_tsv` column exists in messages table
-   - Use `plainto_tsquery()` for searches, not plain LIKE
+5. **Memory retrieval not working**:
+   - Test Firebase connectivity: `python scripts/test_firebase_connection.py`
+   - Verify user facts exist in Firestore
+   - Check Firestore security rules
 
 ### Quick Reference - Key Patterns
 

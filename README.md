@@ -1,14 +1,15 @@
 # Freya Backend Rebuild
 
-This repository contains the code for rebuilding the Freya AI chatbot backend using Python and PostgreSQL, designed to work seamlessly with the existing React frontend.
+This repository contains the code for rebuilding the Freya AI chatbot backend using Python and Firebase/Firestore, designed to work seamlessly with the existing React frontend.
 
 ## Project Overview
-- **Backend:** Python 3.11+, FastAPI, SQLAlchemy/SQLModel, PostgreSQL
+- **Backend:** Python 3.11+, FastAPI, Firebase/Firestore
 - **Frontend:** React (existing)
 - **Features:**
   - Multi-tiered memory system (user facts, recent history, topics)
   - OpenAI GPT-4.1 mini integration
-  - RESTful API and WebSocket support
+  - Firebase/Firestore integration with existing data
+  - Server-Sent Events (SSE) for real-time communication
   - Full compatibility with frontend event system
 
 ## Getting Started
@@ -34,12 +35,12 @@ cd new-freya
   pip install -r requirements.txt
   ```
 
-### 3. Set up PostgreSQL
-- Install PostgreSQL and pgAdmin if not already installed
-- Create a local development database (see `memory-bank/tasks.md` for schema)
+### 3. Set up Firebase/Firestore
+- Ensure Firebase service account credentials are in place (`freya-ai-chat-firebase-adminsdk-fbsvc-0af7f65b8e.json`)
+- Firestore collections should include: `userFacts`, `conversations`, `messages`
 
-### 4. Environment Variables
-- Copy `.env.example` to `.env` and fill in your configuration (OpenAI API key, database URL, etc.)
+### 4. Environment Variables  
+- Copy `.env.example` to `.env` and fill in your configuration (OpenAI API key, Firebase config, etc.)
 
 ### 5. Run the backend
 ```sh
@@ -50,17 +51,14 @@ python scripts/run_server.py
 
 ### 6. Testing
 ```sh
-# Run comprehensive test suite (starts server and runs all tests)
-python scripts/test_all.py
+# Test Firebase connectivity and data retrieval
+python scripts/test_firebase_connection.py
 
-# Run specific pytest unit tests
-python -m pytest tests/test_chat_simple.py -v
+# Test complete Firebase chat API with real data
+python scripts/test_firebase_chat.py
 
-# Create a test user
-python scripts/create_test_user.py
-
-# Test the chat endpoint directly
-python scripts/test_chat_simple.py
+# Test Server-Sent Events (SSE) functionality
+python scripts/test_event_dispatcher.py
 ```
 
 ## Documentation

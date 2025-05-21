@@ -1,6 +1,6 @@
 # Freya Backend Rebuild - Tasks
 
-This document outlines the planned phases and tasks for rebuilding the Freya AI chatbot backend using Python and PostgreSQL while maintaining compatibility with the existing React frontend.
+This document outlines the planned phases and tasks for rebuilding the Freya AI chatbot backend using Python while maintaining compatibility with the existing React frontend.
 
 ## Phase 1: Project Setup & Environment Configuration
 - [x] **Create project structure**
@@ -140,103 +140,77 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Implement conversation search endpoint
   - [x] Create endpoint for conversation reset/deletion
 
-## Phase 5: Frontend Integration & Event System
-- [x] **Create browser event emitter**
-  - [x] Implement Server-Sent Events (SSE) endpoint
-    - Created `/events/stream` endpoint for SSE connections
-    - Added `/events/chat` endpoint for streaming responses
-    - Implemented EventService for event formatting
-    - Added proper error handling and client connection monitoring
-  - [ ] Create custom event dispatching service
-  - [ ] Add event payload formatting
-  - [ ] Implement event sequence management
-- [ ] **Implement frontend compatibility layer**
-  - [ ] Create /legacy endpoint for backward compatibility
-  - [ ] Implement window.sendMessageToAPI equivalent
-  - [ ] Add support for freya:listening events
-  - [ ] Add support for freya:thinking events
-  - [ ] Add support for freya:reply events
-- [x] **Test frontend communication**
-  - [x] Verify events are properly emitted
-  - [x] Test message sending and receiving
-  - [x] Validate conversation flow
-  - [x] Test error handling and recovery
-- [ ] **Add WebSocket support (optional)**
-  - [ ] Implement WebSocket endpoint
-  - [ ] Add real-time message delivery
-  - [ ] Create bidirectional communication channel
-  - [ ] Implement connection management
+## Phase 5: Simplified Firebase Integration ✅ [COMPLETED 2025-05-21]
+- [x] **Connect to existing Firebase/Firestore**
+  - [x] Set up Firebase Admin SDK integration
+  - [x] Configure Firebase authentication
+  - [x] Set up Firestore connection for existing database
+  - [x] Implement Firestore data access service
+- [x] **Create simplified chat API**
+  - [x] Implement single `/firebase/chat` endpoint for message handling
+  - [x] Create simplified request/response model
+  - [x] Add basic user authentication
+  - [x] Implement conversation ID tracking
+- [x] **Implement memory retrieval from Firestore**
+  - [x] Create memory access service for Firestore
+  - [x] Implement Tier 1 (User Facts) retrieval
+  - [x] Implement Tier 2 (Recent History) retrieval
+  - [x] Implement Tier 3 (Topic Memory) retrieval
+  - [x] Build memory context from Firestore data
+- [x] **Implement message handling**
+  - [x] Store new user messages in Firestore
+  - [x] Extract and store new facts from conversations
+  - [x] Update topic memories as needed
+  - [x] Handle conversation context management
+- [x] **Implement frontend compatibility** (confirm)  
+  - [x] Create simple UI state flags (listening, thinking, reply)
+  - [x] Implement Server-Sent Events (SSE) for real-time communication
+  - [x] Create compatibility with existing UI expectations
+  - [x] Ensure seamless transition for end users
 
-## Phase 6: Data Migration & Import
-- [ ] **Create Firestore export tool**
-  - [ ] Implement Firestore data extraction
-  - [ ] Add data transformation logic
-  - [ ] Create JSON export format
-  - [ ] Add validation for exported data
-- [ ] **Implement PostgreSQL import**
-  - [ ] Create data import service
-  - [ ] Add data validation and cleaning
-  - [ ] Implement transaction-based import
-  - [ ] Add progress tracking and reporting
-- [ ] **Migrate user data**
-  - [ ] Import user information
-  - [ ] Migrate user facts
-  - [ ] Transfer conversation history
-  - [ ] Preserve conversation timestamps
-- [ ] **Verify data integrity**
-  - [ ] Create data validation scripts
-  - [ ] Compare source and target data
-  - [ ] Fix any inconsistencies
-  - [ ] Generate migration report
-
-## Phase 7: Testing & Quality Assurance
-- [ ] **Implement unit tests**
-  - [ ] Add tests for database models
-  - [ ] Create tests for memory system
-  - [ ] Implement tests for API endpoints
-  - [ ] Add tests for OpenAI integration
-- [ ] **Add integration tests**
+## Phase 6: Testing & Refinement (see if I can test with frontend wired up)
+- [ ] **Implement basic tests**
+  - [ ] Create unit tests for Firebase integration
+  - [ ] Test memory retrieval functionality
+  - [ ] Verify chat endpoint works correctly
+  - [ ] Test OpenAI integration
+- [ ] **Test with frontend**
+  - [ ] Verify compatibility with existing UI
   - [ ] Test end-to-end conversation flow
-  - [ ] Verify memory system functionality
-  - [ ] Test frontend-backend integration
-  - [ ] Validate data persistence
-- [ ] **Perform load testing**
-  - [ ] Test concurrent user scenarios
-  - [ ] Measure response times
-  - [ ] Identify performance bottlenecks
-  - [ ] Optimize critical paths
-- [ ] **Add logging and monitoring**
-  - [ ] Configure structured logging
-  - [ ] Add request/response logging
-  - [ ] Implement error tracking
-  - [ ] Set up performance monitoring
+  - [ ] Ensure memory system works correctly
+  - [ ] Test transitions between UI states
+- [ ] **Performance optimization**
+  - [ ] Optimize Firestore queries
+  - [ ] Improve memory context building
+  - [ ] Enhance response times
+  - [ ] Streamline data storage
+- [ ] **Error handling and logging**
+  - [ ] Implement robust error handling
+  - [ ] Add structured logging
+  - [ ] Create user-friendly error messages
+  - [ ] Add monitoring for critical errors
 
-## Phase 8: Deployment & CI/CD
-- [ ] **Configure Railway deployment**
-  - [ ] Set up Railway project
-  - [ ] Configure environment variables
-  - [ ] Set up PostgreSQL instance
-  - [ ] Configure deployment triggers
-- [ ] **Implement CI/CD pipeline**
-  - [ ] Set up GitHub Actions workflow
-  - [ ] Add linting and testing steps
-  - [ ] Configure automated deployment
-  - [ ] Implement rollback procedures
+## Phase 7: Deployment
+- [ ] **Set up hosting environment**
+  - [ ] Configure hosting platform (Vercel, Railway, etc.)
+  - [ ] Set up environment variables
+  - [ ] Configure Firebase credentials
+  - [ ] Implement secure key management
+- [ ] **Deploy API**
+  - [ ] Set up continuous deployment
+  - [ ] Configure API domain
+  - [ ] Implement CORS protection
+  - [ ] Set up SSL/TLS
 - [ ] **Create documentation**
-  - [ ] Update API documentation
-  - [ ] Document database schema
-  - [ ] Create deployment guide
-  - [ ] Add troubleshooting instructions
-- [ ] **Add security measures**
-  - [ ] Implement rate limiting
-  - [ ] Add API key validation
-  - [ ] Configure secure headers
-  - [ ] Implement input validation
-- [ ] **Perform final testing**
+  - [ ] Document API endpoints
+  - [ ] Create setup instructions
+  - [ ] Document environment configuration
+  - [ ] Add troubleshooting guide
+- [ ] **Final testing**
   - [ ] Test in production environment
-  - [ ] Verify all features work as expected
-  - [ ] Check performance and scalability
-  - [ ] Validate security measures
+  - [ ] Verify all features work correctly
+  - [ ] Check security configurations
+  - [ ] Validate end-to-end functionality
 
 ## Appendix: Key Implementation Details
 
@@ -295,62 +269,23 @@ To uncover the truth about your crew's death on Saturn and to understand your ow
     - temperature: 1 (DEFAULT_TEMPERATURE constant)
     - max_tokens: 800 (MAX_TOKENS constant)
 
-### Frontend Event System Communication
-For compatibility with the existing frontend, the new backend should emit the following events:
-
-1. **freya:listening** - When Freya starts listening to user input
-   ```javascript
-   const listeningEvent = new CustomEvent('freya:listening');
-   window.dispatchEvent(listeningEvent);
-   ```
-
-2. **freya:thinking** - When Freya is processing a response
-   ```javascript
-   const thinkingEvent = new CustomEvent('freya:thinking');
-   window.dispatchEvent(thinkingEvent);
-   ```
-
-3. **freya:reply** - When Freya sends a response
-   ```javascript
-   const replyEvent = new CustomEvent('freya:reply', {
-     detail: { message: "Your response text here" }
-   });
-   window.dispatchEvent(replyEvent);
-   ```
-
-### Database Schema (Proposed)
-```
-users
-  id: UUID (PK)
-  name: VARCHAR
-  created_at: TIMESTAMP
-
-conversations
-  id: UUID (PK)
-  user_id: UUID (FK -> users.id)
-  created_at: TIMESTAMP
-
-messages
-  id: UUID (PK)
-  conversation_id: UUID (FK -> conversations.id)
-  role: VARCHAR (user/assistant)
-  content: TEXT
-  timestamp: TIMESTAMP
-
-user_facts
-  id: UUID (PK)
-  user_id: UUID (FK -> users.id)
-  type: VARCHAR (job, location, interests, etc.)
-  value: TEXT
-  timestamp: TIMESTAMP
-
-topics
-  id: UUID (PK)
-  name: VARCHAR
-
-message_topics
-  id: UUID (PK)
-  message_id: UUID (FK -> messages.id)
-  topic_id: UUID (FK -> topics.id)
-  relevance_score: FLOAT
-```
+### Firebase Data Structure
+- **Users Collection**
+  - User information
+  - Authentication details
+  - Settings and preferences
+- **Conversations Collection**
+  - Conversation metadata
+  - Timestamps and user references
+- **Messages Collection/Subcollection**
+  - Message content
+  - Role (user/assistant)
+  - Timestamps and metadata
+- **UserFacts Collection**
+  - Extracted facts about users
+  - Categories and fact types
+  - Timestamps and evidence
+- **Topics Collection**
+  - Topic metadata
+  - Message references
+  - Relevance scores

@@ -9,4 +9,6 @@ isort
 flake8
 openai>=1.17.0
 sse-starlette
+firebase-admin>=6.2.0
+google-cloud-firestore>=2.11.0
 
