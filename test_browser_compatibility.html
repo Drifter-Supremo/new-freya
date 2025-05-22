@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freya SSE Browser Compatibility Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.idle { background-color: #e8e8e8; color: #666; }
+        .status.listening { background-color: #e3f2fd; color: #1976d2; }
+        .status.replying { background-color: #fff3e0; color: #f57c00; }
+        .event-log {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        .event-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-radius: 2px;
+        }
+        .message-box {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        .messages {
+            margin: 20px 0;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            text-align: right;
+        }
+        .freya-message {
+            background-color: #f3e5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Freya SSE Browser Compatibility Test</h1>
+        
+        <div class="status idle" id="status">
+            FREYA // STANDBY
+        </div>
+        
+        <div class="message-box">
+            <input type="text" id="userInput" placeholder="Type a message to Freya..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        
+        <div class="messages" id="messages"></div>
+        
+        <h3>Event Log</h3>
+        <div class="event-log" id="eventLog">
+            <div class="event-item">Waiting for events...</div>
+        </div>
+        
+        <h3>Browser Event Listeners</h3>
+        <div class="event-log" id="browserEventLog">
+            <div class="event-item">Monitoring browser events...</div>
+        </div>
+    </div>
+
+    <script>
+        let eventSource = null;
+        let currentState = 'idle';
+        
+        // Log events to the event log
+        function logEvent(message, logId = 'eventLog') {
+            const log = document.getElementById(logId);
+            const item = document.createElement('div');
+            item.className = 'event-item';
+            item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.insertBefore(item, log.firstChild);
+            
+            // Keep only last 20 events
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+        
+        // Update UI state
+        function updateState(state) {
+            currentState = state;
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${state}`;
+            
+            switch(state) {
+                case 'listening':
+                    statusEl.textContent = 'FREYA // LISTENING';
+                    break;
+                case 'replying':
+                    statusEl.textContent = 'FREYA // REPLYING';
+                    break;
+                default:
+                    statusEl.textContent = 'FREYA // STANDBY';
+            }
+        }
+        
+        // Add message to chat
+        function addMessage(content, isUser) {
+            const messagesEl = document.getElementById('messages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${isUser ? 'user-message' : 'freya-message'}`;
+            messageEl.textContent = content;
+            messagesEl.insertBefore(messageEl, messagesEl.firstChild);
+        }
+        
+        // Setup browser event listeners (for frontend compatibility)
+        window.addEventListener('freya:listening', (event) => {
+            logEvent('Browser Event: freya:listening', 'browserEventLog');
+            updateState('listening');
+        });
+        
+        window.addEventListener('freya:thinking', (event) => {
+            logEvent('Browser Event: freya:thinking', 'browserEventLog');
+            updateState('replying');
+        });
+        
+        window.addEventListener('freya:reply', (event) => {
+            logEvent(`Browser Event: freya:reply - ${event.detail?.message || 'No message'}`, 'browserEventLog');
+            if (event.detail?.message) {
+                addMessage(event.detail.message, false);
+            }
+            updateState('idle');
+        });
+        
+        // Send message function
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, true);
+            input.value = '';
+            
+            // Close existing connection if any
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            // Send the message via SSE
+            const url = `http://localhost:8000/events/chat?user_id=1&message=${encodeURIComponent(message)}`;
+            logEvent(`Sending POST request to: ${url}`);
+            
+            // Use fetch with streaming
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'text/event-stream',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let fullReply = '';
+                
+                return reader.read().then(function processResult(result) {
+                    if (result.done) {
+                        logEvent('Stream closed');
+                        return;
+                    }
+                    
+                    buffer += decoder.decode(result.value, { stream: true });
+                    
+                    // Process complete events (ending with double newline)
+                    const events = buffer.split('\n\n');
+                    buffer = events.pop() || ''; // Keep incomplete event in buffer
+                    
+                    for (const eventData of events) {
+                        if (!eventData.trim()) continue;
+                        
+                        const lines = eventData.trim().split('\n');
+                        let eventType = '';
+                        let data = '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('event:')) {
+                                eventType = line.substring(6).trim();
+                            } else if (line.startsWith('data:')) {
+                                data = line.substring(5).trim();
+                            }
+                        }
+                        
+                        if (eventType && data) {
+                            logEvent(`SSE Event: ${eventType}`);
+                            
+                            try {
+                                const jsonData = JSON.parse(data);
+                                
+                                // Dispatch browser events for compatibility
+                                const customEvent = new CustomEvent(eventType, {
+                                    detail: jsonData
+                                });
+                                window.dispatchEvent(customEvent);
+                                
+                                // Handle SSE events
+                                switch(eventType) {
+                                    case 'freya:listening':
+                                        updateState('listening');
+                                        break;
+                                    case 'freya:thinking':
+                                        updateState('replying');
+                                        break;
+                                    case 'freya:reply':
+                                        if (jsonData.message) {
+                                            fullReply += jsonData.message;
+                                            // Update the last Freya message or add new one
+                                            const messages = document.getElementById('messages');
+                                            const lastMessage = messages.querySelector('.freya-message');
+                                            if (lastMessage && lastMessage === messages.firstElementChild) {
+                                                lastMessage.textContent = fullReply;
+                                            } else {
+                                                addMessage(fullReply, false);
+                                            }
+                                        }
+                                        updateState('idle');
+                                        break;
+                                    case 'error':
+                                        logEvent(`Error: ${jsonData.message || 'Unknown error'}`);
+                                        updateState('idle');
+                                        break;
+                                }
+                            } catch (e) {
+                                logEvent(`Failed to parse JSON: ${e.message}`);
+                            }
+                        }
+                    }
+                    
+                    // Continue reading
+                    return reader.read().then(processResult);
+                });
+            })
+            .catch(error => {
+                logEvent(`Error: ${error.message}`);
+                updateState('idle');
+            });
+        }
+        
+        // Allow Enter key to send message
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Test legacy API function
+        window.sendMessageToAPI = function(userText, showStatus) {
+            logEvent(`Legacy API called: sendMessageToAPI("${userText}", ${showStatus})`, 'browserEventLog');
+            // The SSE approach handles everything, so we just need to trigger sendMessage
+            document.getElementById('userInput').value = userText;
+            sendMessage();
+        };
+        
+        logEvent('Browser compatibility test loaded');
+        logEvent('Ready to test SSE and browser event compatibility', 'browserEventLog');
+    </script>
+</body>
+</html>
