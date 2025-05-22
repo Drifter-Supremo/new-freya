@@ -1,6 +1,6 @@
 # Active Context: Freya Backend Rebuild
 
-> **Testing Requirements**: All database tests must be run against PostgreSQL (not SQLite). The application uses PostgreSQL-specific features including full-text search (`TSVECTOR`), JSONB fields, and other PostgreSQL-specific optimizations. Test configurations should connect to a PostgreSQL database with the same version as production.
+> **Testing Requirements**: The application now uses Firebase/Firestore as the primary backend. All tests should be run against the Firebase services. PostgreSQL is no longer used in the current implementation following the simplified approach.
 
 > Backend setup phase complete—modular FastAPI structure, health and db-health endpoints, PostgreSQL pooling, DB initialization script, and connection testing endpoint all working. Developer experience is smooth and maintainable compared to Node.js.
 - Database schema and all core models fully implemented and tested.
@@ -166,27 +166,30 @@
 
 ## Current Work Focus
 
-- Implementing Phase 5: Frontend Integration & Event System
-- Server-Sent Events (SSE) endpoint successfully implemented and tested for real-time communication
-- Confirmed working end-to-end functionality with real OpenAI API calls
-- Reliable test scripts created for SSE endpoint verification
-- Next step: Create window.sendMessageToAPI equivalent for frontend compatibility
-- Working on implementation of browser event dispatching system
-- Need to complete frontend and backend integration
+- **Phase 6: Testing & Refinement** [Started 2025-05-22]
+- ✅ Unit tests for Firebase integration completed (4/4 tests passing)
+- Created test infrastructure without pytest dependency for simplicity
+- Tests verify Firebase service, memory query detection, and chat models
+- Next tasks:
+  - Test memory retrieval functionality
+  - Verify chat endpoint works correctly with integration tests
+  - Test OpenAI integration
+  - Test with frontend wired up
 
 ## Next Steps
 
-1. Complete the frontend compatibility layer (window.sendMessageToAPI)
-2. Implement integration tests for frontend and backend communication
-3. Complete data migration from Firestore to PostgreSQL
-4. Add WebSocket support (optional)
-5. Set up CI/CD pipeline for backend
+1. Complete remaining Phase 6 testing tasks
+2. Test memory retrieval functionality with real data
+3. Verify chat endpoint with comprehensive integration tests
+4. Test OpenAI integration thoroughly
+5. Test with frontend wired up for end-to-end validation
+6. Move to Phase 7: Deployment preparation
 
 ## Active Decisions and Considerations
 
-- Prioritize stateless API design and robust memory context assembly.
-- Ensure compatibility with existing frontend event system.
-- Use SQLModel or SQLAlchemy for ORM layer.
-- Maintain clear, up-to-date documentation throughout development.
-- Implement API endpoints first for conversation management, then for chat completions
-- Build browser event emitter to maintain compatibility with existing frontend
+- Following simplified approach - using Firebase/Firestore instead of PostgreSQL
+- Prioritize simple, working solutions over complex architectures
+- Unit tests implemented without pytest dependency for simplicity
+- Frontend compatibility confirmed with real API calls
+- Focus on practical testing that verifies real functionality
+- Maintain clear documentation of actual implementation status

@@ -1,43 +1,34 @@
 # System Patterns: Freya Backend
 
-> **Database Testing Policy**: All database operations and tests must be run against a PostgreSQL database. SQLite is not supported due to the use of PostgreSQL-specific features such as:
-> - Full-text search (`TSVECTOR/TSQUERY`)
-> - JSONB data type and operations
-> - Advanced indexing features
-> - Specific SQL functions and syntax
->
-> Test configurations must connect to a PostgreSQL database instance that matches the production database version.
+> **Database Testing Policy**: All database operations and tests are run against Firebase/Firestore. The application follows the simplified approach and uses the existing production Firestore database. No PostgreSQL or SQL-based testing is required.
 
 ## System Architecture
 
 - Modular FastAPI structure: entrypoint (`main.py`) is minimal and only wires together routers, error handlers, and config; all configuration and error handling is in `core/`, all API endpoints are in `api/routes/`. No file should exceed 300-400 lines; everything is organized for maintainability.
-- Health (`/health`) and db-health (`/db-health`) endpoints for application and database monitoring.
-- Connection pooling for PostgreSQL using SQLAlchemy's QueuePool.
-- Alembic is used for schema versioning and migrations, with an alembic_version table in the DB to track schema state.
-- All schema changes are made via versioned migration scripts, decoupling model changes from app runtime.
-
-- Database initialization script for automated table creation.
-- Dedicated endpoint for live database connection testing.
-- Stateless REST API using FastAPI (Python).
-- PostgreSQL as the primary data store, replacing Firebase.
+- Health (`/health`) endpoint for application monitoring.
+- Firebase/Firestore as the primary data store (no PostgreSQL).
+- No database migrations needed - using existing Firestore schema.
+- Simple, stateless REST API using FastAPI (Python).
 - Three-tier memory architecture:
-  1. User Facts
-  2. Recent History
-  3. Topic Memory
+  1. User Facts (stored in Firestore)
+  2. Recent History (retrieved from Firestore)
+  3. Topic Memory (queried from Firestore)
 - Memory context assembly engine injects relevant memory into each API call.
 - Event-driven communication with frontend via custom browser events.
+- Server-Sent Events (SSE) for real-time communication.
 
 ## Key Technical Decisions
 
 - Use FastAPI for high performance and async support.
-- SQLModel or SQLAlchemy for ORM and migrations (with Alembic).
+- Firebase Admin SDK for Firestore operations.
 - Structured logging and validation for all endpoints.
-- Full-text search enabled in PostgreSQL for topic retrieval.
-- Migration tooling for Firestore → PostgreSQL data transfer.
+- Native Firestore querying for topic retrieval.
+- No migration needed - using existing Firestore database.
+- Follow simplified approach - avoid unnecessary complexity.
 
 ## Design Patterns
 
-- **Repository Query Pattern**: Dedicated repository for efficient user/topic/fact/message retrieval using SQLAlchemy joins and eager loading. All datetime fields use timezone-aware UTC datetimes for future compatibility.
+- **Service Pattern**: Firebase services handle all Firestore operations. Memory services aggregate data from multiple collections.
 - **Service Layer**: Business logic and memory context assembly are handled in dedicated service classes.
   - `TopicExtractor` service for extracting and scoring topics from messages
   - `TopicTaggingService` for managing topic persistence and message-topic associations
@@ -120,22 +111,26 @@
 
 - **API Layer**: Endpoints in `api/routes/` handle HTTP requests and responses
 - **Service Layer**:
+  - `FirebaseService` handles all Firestore operations
+  - `FirebaseMemoryService` retrieves and assembles memory context
   - `TopicExtractor` identifies potential topics from message content
-  - `TopicTaggingService` persists topics and their relationships
-  - Other services handle different aspects of the memory system
+  - `OpenAIService` handles chat completions with memory context
 - **Data Access Layer**:
-  - Repository pattern for database operations
-  - SQLAlchemy ORM for database interactions
-  - PostgreSQL-specific features (TSVECTOR, JSONB) for optimized queries
+  - Firebase Admin SDK for Firestore operations
+  - Native Firestore querying and filtering
+  - No ORM needed - direct document operations
 - **Memory System**:
   - Three-tier architecture (User Facts, Recent History, Topic Memory)
+  - All tiers stored in Firestore collections
   - Memory context engine aggregates data from all tiers
 - **Frontend Integration**:
-  - Communicates with backend via browser events and REST endpoints
+  - Communicates via REST API and Server-Sent Events
+  - Legacy compatibility with window.sendMessageToAPI
   - Custom events for real-time updates
 - **Infrastructure**:
   - Centralized logging and error handling
   - Configuration management via environment variables
+  - Firebase credentials managed securely
 
 ## Testing Patterns
 
@@ -153,7 +148,11 @@
 - **Simple Tests**: `scripts/test_chat_simple.py` - Direct endpoint testing
 
 ### Test Coverage
-- Unit tests: Basic functionality testing
-- Integration tests: End-to-end flow validation
+- Unit tests: Basic functionality testing without pytest dependency
+- Integration tests: End-to-end flow validation with real API calls
 - Helper scripts: Manual testing and debugging
-- All tests must run against PostgreSQL (not SQLite)
+- All tests run against Firebase/Firestore production data
+- Test files:
+  - `scripts/test_firebase_unit.py` - Simple unit tests (4 tests passing)
+  - `scripts/test_firebase_chat.py` - Full integration tests
+  - `tests/test_firebase_integration.py` - Comprehensive unit tests

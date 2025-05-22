@@ -2,25 +2,26 @@
 
 ## Technologies Used
 
-- **Backend:** Python 3.11+, FastAPI, SQLModel or SQLAlchemy, PostgreSQL, Uvicorn, python-dotenv, Alembic
+- **Backend:** Python 3.11+, FastAPI, Firebase Admin SDK, Firestore, Uvicorn, python-dotenv
 - **Frontend:** React 18, Next.js 14 (App Router), Tailwind CSS, shadcn/ui, Framer Motion (already built)
 - **AI Integration:** OpenAI API (GPT-4.1 Mini fine-tuned model)
-- **Storage:** PostgreSQL (hosted on Railway), optional Cloudinary/UploadThing for media
+- **Storage:** Firebase/Firestore (production database), no PostgreSQL migration needed
 
 ## Development Setup
 
 ### Core Dependencies
-- Python 3.12.10 (Windows)
+- Python 3.11+ (macOS)
 - FastAPI for the web framework
-- SQLAlchemy/SQLModel for ORM
-- PostgreSQL with psycopg2-binary driver
+- Firebase Admin SDK for database operations
+- Google Cloud Firestore for data persistence
 - python-dotenv for environment management
-- Alembic for database migrations
+- No database migrations needed (using existing Firestore)
 
 ### Development Tools
 - black, isort, flake8 for code formatting and linting
-- pytest for testing
+- unittest for testing (no pytest dependency)
 - Uvicorn as the ASGI server
+- Simple test scripts for practical testing
 
 ### Environment
 - Virtual environment: Working and activated
@@ -29,9 +30,10 @@
 - Environment variables configured via .env file
 
 ### Infrastructure
-- PostgreSQL database instance (local for dev, Railway for prod)
-- GitHub Actions for CI/CD pipeline
+- Firebase/Firestore (existing production database)
+- GitHub for version control
 - Node.js and pnpm for frontend (already complete)
+- No additional database setup required
 
 ### Topic Extraction
 - Implemented in `app/services/topic_extraction.py`
@@ -41,18 +43,20 @@
 ## Technical Constraints
 
 - Backend must be stateless and compatible with browser event system
-- Must support migration from Firestore to PostgreSQL
+- Uses existing Firestore database (no migration needed)
 - Ensure secure handling of API keys and user data
 - Maintain compatibility with existing frontend
+- Follow simplified approach - avoid unnecessary complexity
 
 ## Dependencies
 
 ### Backend
 - **Web Framework**: FastAPI
-- **Database**: SQLAlchemy, SQLModel, psycopg2-binary, asyncpg
-- **Development**: black, isort, flake8, pytest
+- **Database**: Firebase Admin SDK, google-cloud-firestore
+- **Development**: black, isort, flake8, unittest
 - **AI**: OpenAI Python SDK (v1.17.0+)
 - **Utilities**: python-dotenv, pydantic, python-multipart
+- **Real-time**: sse-starlette for Server-Sent Events
 
 ### OpenAI Integration
 - **Core**: OpenAI Python SDK for API communication

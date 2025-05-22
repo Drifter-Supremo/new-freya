@@ -285,6 +285,11 @@ Routes organized in `app/api/routes/`:
 - Server-Sent Events (SSE) testing for real-time communication
 - OpenAI integration tests with memory context
 - Production Firestore database used for testing
+- Unit tests run without pytest dependency for simplicity
+- Test files:
+  - `scripts/test_firebase_chat.py` - Full integration tests with real API calls
+  - `scripts/test_firebase_unit.py` - Simple unit tests (4 tests, all passing)
+  - `tests/test_firebase_integration.py` - Comprehensive unit tests using unittest
 
 ### Environment Configuration
 Required environment variables (see `.env.example`):
@@ -339,11 +344,25 @@ Detailed task breakdown in `memory-bank/tasks.md` tracks implementation phases:
   - ✅ Firebase memory service working with real user data (11 user facts)
   - ✅ Simplified Firebase chat API fully functional
   - ✅ All integration tests passing with production Firestore data
+  - ✅ Frontend compatibility verified with real API calls
   - Real-time streamed responses from OpenAI working successfully
   - Fine-tuned GPT-4.1 Mini responding with personalized memory context
-- Phase 6-8: Data Migration, Testing, Deployment (pending)
+- Phase 6: 🟡 In Progress - Testing & Refinement [Started 2025-05-22]
+  - ✅ Unit tests for Firebase integration (4/4 tests passing)
+  - ⏳ Memory retrieval functionality tests
+  - ⏳ Chat endpoint integration tests
+  - ⏳ OpenAI integration tests
+  - ⏳ Frontend end-to-end tests
+- Phase 7-8: Deployment (pending)
 
 ### Recent Achievements 
+
+#### Phase 6 (Testing & Refinement) - In Progress [2025-05-22]
+- Successfully created unit tests for Firebase integration without pytest dependency
+- Created two test files: `tests/test_firebase_integration.py` and `scripts/test_firebase_unit.py`
+- All 4 unit tests passing: Firebase service initialization, memory query detection, chat request validation, chat response structure
+- Tests align with simplified approach - focusing on practical functionality
+- Verified frontend compatibility with real API calls showing personalized responses
 
 #### Phase 5 (Simplified Firebase Integration) - Completed [2025-05-21]
 - Successfully implemented complete Firebase/Firestore integration with production data

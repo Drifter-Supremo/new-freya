@@ -169,8 +169,12 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
   - [x] Ensure seamless transition for end users
 
 ## Phase 6: Testing & Refinement (see if I can test with frontend wired up)
-- [ ] **Implement basic tests**
-  - [ ] Create unit tests for Firebase integration
+- [x] **Implement basic tests** [Partially Complete - 2025-05-22]
+  - [x] Create unit tests for Firebase integration
+    - Created `tests/test_firebase_integration.py` with unittest framework
+    - Created `scripts/test_firebase_unit.py` for simple unit testing
+    - Tests cover: Firebase service initialization, memory query detection, chat request/response models
+    - All 4 unit tests passing successfully
   - [ ] Test memory retrieval functionality
   - [ ] Verify chat endpoint works correctly
   - [ ] Test OpenAI integration
