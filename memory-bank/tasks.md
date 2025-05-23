@@ -175,7 +175,13 @@ This document outlines the planned phases and tasks for rebuilding the Freya AI 
     - Created `scripts/test_firebase_unit.py` for simple unit testing
     - Tests cover: Firebase service initialization, memory query detection, chat request/response models
     - All 4 unit tests passing successfully
-  - [ ] Test memory retrieval functionality
+  - [x] Test memory retrieval functionality
+    - Created comprehensive test suite in `scripts/test_memory_retrieval.py`
+    - All 10 tests passing with real Firebase/Firestore data
+    - Verified user facts, recent messages, topic memories retrieval
+    - Memory query detection working at 94.4% accuracy
+    - Relevance scoring and prioritization functioning correctly
+    - Firestore index created for conversation queries [2025-05-23]
   - [ ] Verify chat endpoint works correctly
   - [ ] Test OpenAI integration
 - [ ] **Test with frontend**
