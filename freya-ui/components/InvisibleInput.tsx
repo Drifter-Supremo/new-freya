@@ -73,7 +73,7 @@ export default function InvisibleInput({ onSend, disabled = false }: InvisibleIn
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full bg-transparent border-0 outline-none text-white/80 caret-accent-cy text-center"
+          className={`w-full bg-transparent border-0 outline-none text-white/80 text-center ${message === "" ? "caret-transparent" : "caret-accent-cy"}`}
           disabled={disabled}
           inputMode="text"
           enterKeyHint="send"
