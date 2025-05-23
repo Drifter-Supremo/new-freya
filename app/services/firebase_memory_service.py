@@ -7,7 +7,7 @@ but retrieves data from Firestore instead of PostgreSQL.
 
 import re
 from typing import Dict, List, Any, Optional, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 
 from app.services.firebase_service import FirebaseService
@@ -253,8 +253,8 @@ class FirebaseMemoryService:
         # Get recent conversations for the user
         conversations = self.firebase.get_user_conversations(user_id, limit=10)
         
-        # Calculate cutoff date
-        cutoff_date = datetime.now() - timedelta(days=max_age_days)
+        # Calculate cutoff date (make it timezone-aware)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=max_age_days)
         
         # Collect messages from each conversation
         all_messages = []
@@ -269,8 +269,13 @@ class FirebaseMemoryService:
                     # Convert timestamp to datetime if needed
                     if not isinstance(timestamp, datetime):
                         if hasattr(timestamp, 'seconds'):
-                            # Convert Firestore timestamp to datetime
-                            timestamp = datetime.fromtimestamp(timestamp.seconds)
+                            # Convert Firestore timestamp to datetime (UTC)
+                            timestamp = datetime.fromtimestamp(timestamp.seconds, tz=timezone.utc)
+                    else:
+                        # If it's already a datetime, ensure it has timezone info
+                        if timestamp.tzinfo is None:
+                            # Assume UTC for naive datetime
+                            timestamp = timestamp.replace(tzinfo=timezone.utc)
                     
                     # Check if message is within cutoff
                     if timestamp > cutoff_date:
@@ -391,10 +396,14 @@ class FirebaseMemoryService:
                 # Convert to datetime if needed
                 if not isinstance(last_used, datetime):
                     if hasattr(last_used, 'seconds'):
-                        last_used = datetime.fromtimestamp(last_used.seconds)
+                        last_used = datetime.fromtimestamp(last_used.seconds, tz=timezone.utc)
+                else:
+                    # If it's already a datetime, ensure it has timezone info
+                    if last_used.tzinfo is None:
+                        last_used = last_used.replace(tzinfo=timezone.utc)
                 
                 # Calculate days since last used
-                days_ago = (datetime.now() - last_used).days
+                days_ago = (datetime.now(timezone.utc) - last_used).days
                 # More recent topics get higher scores
                 recency_factor = max(0, 0.5 - (days_ago * 0.05))  # Decrease by 0.05 per day
                 base_score += recency_factor
@@ -765,9 +774,9 @@ class FirebaseMemoryService:
                     else:
                         # If it's a Firestore timestamp, convert to datetime
                         if hasattr(timestamp, 'seconds'):
-                            dt = datetime.fromtimestamp(timestamp.seconds)
+                            dt = datetime.fromtimestamp(timestamp.seconds, tz=timezone.utc)
                         else:
-                            dt = datetime.now()  # Fallback
+                            dt = datetime.now(timezone.utc)  # Fallback
                     
                     formatted_date = dt.strftime("%b %d, %Y")
                     formatted_time = dt.strftime("%I:%M %p")
