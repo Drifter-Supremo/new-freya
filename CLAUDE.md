@@ -31,22 +31,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Virtual Environment**: Located at `venv/` in project root
 - **Database**: Firebase/Firestore (must have valid service account credentials)
 
-### Quick Start Guide for Testing
+### Quick Start Guide - How to Run Freya
 
-1. **Activate Virtual Environment (macOS)**:
+**ONE COMMAND TO START EVERYTHING:**
+```bash
+cd "/Volumes/Low Key Genius Hub/Projects/new-freya-who-this/freya-ui"
+npm run dev
+```
+
+This starts both servers:
+- **Backend (FastAPI)**: http://localhost:8001
+- **Frontend (Next.js)**: http://localhost:3000
+
+**Access Freya**: Open browser to http://localhost:3000
+
+### Manual Start (Alternative)
+
+1. **Start Backend**:
    ```bash
-   cd "/Users/blackcanopy/Documents/Projects/new-freya-who-this"
-   # Use macOS Python with virtual environment:
+   cd "/Volumes/Low Key Genius Hub/Projects/new-freya-who-this"
    source venv/bin/activate
+   python -m uvicorn app.main:app --reload --port 8001
    ```
 
-2. **Start the FastAPI Server**:
+2. **Start Frontend** (new terminal):
    ```bash
-   # Option 1: Using the helper script
-   python scripts/run_server.py
-   
-   # Option 2: Direct uvicorn
-   python -m uvicorn app.main:app --reload
+   cd "/Volumes/Low Key Genius Hub/Projects/new-freya-who-this/freya-ui"
+   npm run frontend
    ```
 
 3. **Run Tests**:
