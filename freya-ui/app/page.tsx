@@ -9,7 +9,6 @@ import { useFreya } from "@/hooks/useFreya"
 export default function Home() {
   const { state, statusText, sendMessage, lastUser, lastFreya } = useFreya()
   const [messagePairs, setMessagePairs] = useState<Array<{ id: number; user: string; freya: string }>>([])
-  const [currentPairId, setCurrentPairId] = useState<number | null>(null)
 
   // Load message pairs from localStorage on mount
   useEffect(() => {
@@ -33,33 +32,32 @@ export default function Home() {
 
   const handleSendMessage = (message: string) => {
     // Create a new message pair with the current message
-    const newPairId = Date.now()
     const newPair = {
-      id: newPairId,
+      id: Date.now(),
       user: message,
       freya: "",
     }
 
     // Update message pairs (keep only the latest)
     setMessagePairs([newPair])
-    setCurrentPairId(newPairId)
 
     // Send message to Freya
     sendMessage(message)
   }
 
-  // Update the current message pair when Freya responds
+  // Update the latest message pair when Freya responds - FIXED VERSION
   useEffect(() => {
-    if (lastFreya && currentPairId !== null) {
+    if (lastFreya && messagePairs.length > 0) {
       setMessagePairs(prev => {
-        return prev.map(pair => 
-          pair.id === currentPairId 
-            ? { ...pair, freya: lastFreya }
-            : pair
-        )
+        const updated = [...prev]
+        // Only update if the current pair doesn't have Freya's response yet, OR if it's a new response
+        if (updated[0] && (!updated[0].freya || updated[0].freya !== lastFreya)) {
+          updated[0].freya = lastFreya
+        }
+        return updated
       })
     }
-  }, [lastFreya, currentPairId])
+  }, [lastFreya])
 
   return (
     <main className="h-screen w-full bg-gradient-to-br from-[#0A0F1F] via-[#0D1021] to-[#130726] flex flex-col items-center justify-center overflow-hidden">
