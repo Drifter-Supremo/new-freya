@@ -12,7 +12,7 @@ interface InvisibleInputProps {
 
 export default function InvisibleInput({ onSend, disabled = false }: InvisibleInputProps) {
   const [message, setMessage] = useState("")
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const [isFocused, setIsFocused] = useState(true)
 
   // Focus management
@@ -64,19 +64,32 @@ export default function InvisibleInput({ onSend, disabled = false }: InvisibleIn
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto"
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
+    }
+  }, [message])
+
   return (
-    <div className="w-full h-12 flex items-center justify-center cursor-text">
+    <div className="w-full min-h-12 flex items-center justify-center cursor-text">
       <form onSubmit={handleSubmit} className="w-full relative flex items-center justify-center">
-        {/* Completely invisible input - no border, no background */}
-        <input
+        {/* Completely invisible textarea - no border, no background */}
+        <textarea
           ref={inputRef}
-          type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className={`w-full bg-transparent border-0 outline-none text-white/80 text-center ${message === "" ? "caret-transparent" : "caret-accent-cy"}`}
+          onKeyDown={handleKeyDown}
+          className={`w-full bg-transparent border-0 outline-none text-white/80 text-center resize-none leading-relaxed ${message === "" ? "caret-transparent" : "caret-accent-cy"}`}
           disabled={disabled}
-          inputMode="text"
-          enterKeyHint="send"
           onFocus={() => setIsFocused(true)}
           onBlur={() => {
             setIsFocused(false)
@@ -87,6 +100,12 @@ export default function InvisibleInput({ onSend, disabled = false }: InvisibleIn
           }}
           aria-label="Message input"
           autoFocus
+          rows={1}
+          style={{ 
+            minHeight: "1.5rem",
+            maxHeight: "8rem",
+            overflow: message.length > 100 ? "auto" : "hidden"
+          }}
         />
 
         {/* Blinking cursor when empty and focused */}

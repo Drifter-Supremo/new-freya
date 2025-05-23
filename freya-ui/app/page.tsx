@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Visualizer from "@/components/Visualizer"
 import MessagePair from "@/components/MessagePair"
 import InvisibleInput from "@/components/InvisibleInput"
@@ -9,28 +9,57 @@ import { useFreya } from "@/hooks/useFreya"
 export default function Home() {
   const { state, statusText, sendMessage, lastUser, lastFreya } = useFreya()
   const [messagePairs, setMessagePairs] = useState<Array<{ id: number; user: string; freya: string }>>([])
+  const [currentPairId, setCurrentPairId] = useState<number | null>(null)
+
+  // Load message pairs from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('freya-message-pairs')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setMessagePairs(parsed)
+      } catch (error) {
+        console.log('Failed to load saved messages')
+      }
+    }
+  }, [])
+
+  // Save message pairs to localStorage whenever they change
+  useEffect(() => {
+    if (messagePairs.length > 0) {
+      localStorage.setItem('freya-message-pairs', JSON.stringify(messagePairs))
+    }
+  }, [messagePairs])
 
   const handleSendMessage = (message: string) => {
     // Create a new message pair with the current message
+    const newPairId = Date.now()
     const newPair = {
-      id: Date.now(),
+      id: newPairId,
       user: message,
       freya: "",
     }
 
     // Update message pairs (keep only the latest)
     setMessagePairs([newPair])
+    setCurrentPairId(newPairId)
 
     // Send message to Freya
     sendMessage(message)
   }
 
-  // Update the latest message pair when Freya responds
-  if (lastFreya && messagePairs.length > 0 && messagePairs[0].freya === "") {
-    const updatedPairs = [...messagePairs]
-    updatedPairs[0].freya = lastFreya
-    setMessagePairs(updatedPairs)
-  }
+  // Update the current message pair when Freya responds
+  useEffect(() => {
+    if (lastFreya && currentPairId !== null) {
+      setMessagePairs(prev => {
+        return prev.map(pair => 
+          pair.id === currentPairId 
+            ? { ...pair, freya: lastFreya }
+            : pair
+        )
+      })
+    }
+  }, [lastFreya, currentPairId])
 
   return (
     <main className="h-screen w-full bg-gradient-to-br from-[#0A0F1F] via-[#0D1021] to-[#130726] flex flex-col items-center justify-center overflow-hidden">
