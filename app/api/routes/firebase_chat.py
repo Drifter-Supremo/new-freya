@@ -23,9 +23,9 @@ router = APIRouter()
 # Models for request/response
 class ChatMessageRequest(BaseModel):
     """Request model for chat messages."""
-    message: str = Field(..., description="The user's message")
+    message: str = Field(..., min_length=1, description="The user's message")
     conversation_id: Optional[str] = Field(None, description="Conversation ID (optional, will create new if not provided)")
-    user_id: str = Field(..., description="User ID")
+    user_id: str = Field(..., min_length=1, description="User ID")
     include_memory: bool = Field(True, description="Whether to include memory context (default: True)")
 
 class ChatMessageResponse(BaseModel):
